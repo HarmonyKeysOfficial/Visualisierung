@@ -6,7 +6,7 @@
     <meta name="description" content="Interaktiver Tonleiter-Visualisierer für Klavier-Anfänger. Lerne Tonleitern, Akkorde und Melodien visuell.">
     <meta name="theme-color" content="#4CAF50">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Tonleiter-Visualisierer v6.4.0</title>
+    <title>Tonleiter-Visualisierer v6.5.6</title>
     <style>
         /* ===== RESET & BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -210,7 +210,7 @@
         .piano-roll-wrapper.expanded .piano-roll-notes { height: 580px; }
         .piano-roll-wrapper.expanded .piano-roll-timeline { height: 580px; }
         .piano-roll-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap; }
-        .piano-roll-title { font-size: 15px; font-weight: bold; color: #333; }
+        .piano-roll-title { font-size: 16px; font-weight: bold; color: #333; }
         .piano-roll-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .piano-roll-btn { padding: 10px 18px; border: 2px solid #4CAF50; background: #4CAF50; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .piano-roll-btn:hover { background: #43A047; }
@@ -228,6 +228,9 @@
         .piece-regen-btn:hover { background: #F57C00 !important; }
         .piece-stop-btn { background: #757575 !important; border-color: #757575 !important; }
         .piece-stop-btn:hover { background: #616161 !important; }
+        .practice-btn { background: #795548 !important; border-color: #795548 !important; }
+        .practice-btn:hover { background: #6D4C41 !important; }
+        .practice-btn.active { background: #4CAF50 !important; border-color: #4CAF50 !important; }
         .piano-roll-main { display: flex; flex: 1; gap: 10px; min-height: 0; overflow: hidden; }
         .piano-roll-container { position: relative; display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
         .piano-roll-notes { position: relative; background: linear-gradient(180deg, #1a1a2a, #2a2a3a); border-radius: 8px 8px 0 0; overflow: hidden; height: 450px; }
@@ -272,8 +275,9 @@
         /* ===== KEYBOARD MAPPING ===== */
         .keyboard-mapping-module { margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f5f5f5, #e8eaf6); border-radius: 12px; border: 2px solid #5C6BC0; }
         .km-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .km-header h3 { margin: 0; font-size: 16px; color: #333; }
-        .km-reset-btn { padding: 6px 14px; border: 2px solid #5C6BC0; background: white; color: #5C6BC0; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .km-header h3 { margin: 0; font-size: 16px; font-weight: bold; color: #333; }
+        .km-hint { font-size: 14px; color: #666; margin-bottom: 12px; }
+        .km-reset-btn { padding: 10px 18px; border: 2px solid #5C6BC0; background: white; color: #5C6BC0; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .km-reset-btn:hover { background: #e8eaf6; }
         .km-tables { display: flex; gap: 20px; flex-wrap: wrap; }
         .km-section { flex: 1; min-width: 200px; }
@@ -508,9 +512,18 @@
             <div id="keyboardMappingArea" style="display:none;">
                 <div class="keyboard-mapping-module">
                     <div class="km-header">
-                        <h3>⌨️ Tastatur-Belegung (Einfacher Modus)</h3>
-                        <button class="km-reset-btn" onclick="resetKeyboardMapping()">↺ Zurücksetzen</button>
+                        <h3>Tastatur-Belegung</h3>
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                            <button class="piano-roll-btn" id="kmPlayBtn" onclick="kmPlay()">▶ Abspielen</button>
+                            <button class="piano-roll-btn pause-btn" id="kmPauseBtn" onclick="kmPause()" disabled>⏸ Pause</button>
+                            <button class="piano-roll-btn stop-btn" id="kmStopBtn" onclick="kmStop()" disabled>⏹ Stopp</button>
+                            <button class="piano-roll-btn practice-btn" id="practiceToggle" onclick="togglePracticeMode()">🎓 Übungsmodus</button>
+                            <button class="piano-roll-btn" id="kmLoopBtn" onclick="toggleKmLoop()" style="background:#9C27B0;border-color:#9C27B0;">🔁 Schleife</button>
+                            <button class="km-reset-btn" onclick="resetKeyboardMapping()">↺ Zurücksetzen</button>
+                        </div>
                     </div>
+                    <div class="km-hint">Tasten frei belegbar – klicke auf eine Taste in der Tabelle zum Ändern. Alle Finger einer Hand können auch auf dieselbe Taste gelegt werden.</div>
+                    <div class="km-hint" style="margin-top:-6px;">Schleife: Aktiviere 🔁, dann klicke zweimal auf den Zeitleisten-Balken rechts (1× Start, 2× Ende). Der markierte Bereich wird beim Abspielen wiederholt.</div>
                     <div class="km-tables">
                         <div class="km-section">
                             <h4>Linke Hand – Grundtöne</h4>
@@ -521,7 +534,7 @@
                             <table class="km-table" id="kmRightTable"></table>
                         </div>
                     </div>
-                    <div class="km-status" id="kmStatus">Drücke eine Taste der linken Hand, dann spiele die Melodie mit der rechten Hand.</div>
+                    <div class="km-status" id="kmStatus"></div>
                 </div>
             </div>
         </div>
@@ -1586,7 +1599,8 @@
     //  PIANO ROLL
     // =====================================================================
     let pianoRollNotes=[], pianoRollPlaying=false, pianoRollPaused=false;
-    let pianoRollData={keyWidth:0,pianoWidth:0,keyPositions:{},totalBeats:0,baseBeatHeight:35,baseTempo:600,beatHeight:35,currentPosition:0,isExpanded:false,containerHeight:220,leftHandKeys:7,leftOffset:0,cachedNoteEls:[],cachedNoteElMap:new Map()};
+    let practiceMode=false, practiceWaiting=null; // {noteIdx, beat}
+    let pianoRollData={keyWidth:0,pianoWidth:0,keyPositions:{},totalBeats:0,baseBeatHeight:35,baseTempo:600,beatHeight:35,currentPosition:0,isExpanded:false,containerHeight:450,leftHandKeys:7,leftOffset:0,cachedNoteEls:[],cachedNoteElMap:new Map()};
 
     function updatePianoRoll(){
         if(isPlaying)stopPlayback();
@@ -1622,6 +1636,8 @@
                 <button class="piano-roll-btn pause-btn" id="pianoRollPauseBtn" onclick="togglePianoRollPause()" disabled>⏸ Pause</button>
                 <button class="piano-roll-btn stop-btn" id="pianoRollStopBtn" onclick="stopPianoRoll()" disabled>⏹ Stopp</button>
                 <button class="piano-roll-btn expand-btn" onclick="togglePianoRollExpand()">↕ Vergrößern</button>
+                
+                
                 <button class="piano-roll-btn" onclick="savePianoRollJSON()" title="JSON speichern">💾</button>
                 <button class="piano-roll-btn" onclick="loadPianoRollJSON()" title="JSON laden">📂</button>
                 <button class="piano-roll-btn" onclick="exportMIDI()" title="MIDI Export">🎹</button>
@@ -1634,6 +1650,8 @@
                 <button class="piano-roll-btn pause-btn" id="pianoRollPauseBtn" onclick="togglePianoRollPause()" disabled>⏸ Pause</button>
                 <button class="piano-roll-btn stop-btn" id="pianoRollStopBtn" onclick="stopPianoRoll()" disabled>⏹ Stopp</button>
                 <button class="piano-roll-btn expand-btn" onclick="togglePianoRollExpand()">↕ Vergrößern</button>
+                
+                
                 <button class="piano-roll-btn" onclick="savePianoRollJSON()" title="JSON speichern">💾</button>
                 <button class="piano-roll-btn" onclick="loadPianoRollJSON()" title="JSON laden">📂</button>
                 <button class="piano-roll-btn" onclick="exportMIDI()" title="MIDI Export">🎹</button>
@@ -1784,10 +1802,16 @@
         }
         if(tl){
             let dragging=false;
-            tl.addEventListener('mousedown',e=>{if(canScroll()){dragging=true;jumpToTimelinePosition(e);}});
+            tl.addEventListener('mousedown',e=>{
+                if(kmLoopActive){const r=tl.getBoundingClientRect();setLoopPoint((e.clientY-r.top)/r.height);return;}
+                if(canScroll()){dragging=true;jumpToTimelinePosition(e);}
+            });
             tl.addEventListener('mousemove',e=>{if(dragging)jumpToTimelinePosition(e);});
             document.addEventListener('mouseup',()=>{dragging=false;});
-            tl.addEventListener('touchstart',e=>{if(canScroll()){dragging=true;jumpToTimelinePosition(e.touches[0]);e.preventDefault();}},{passive:false});
+            tl.addEventListener('touchstart',e=>{
+                if(kmLoopActive){const r=tl.getBoundingClientRect();setLoopPoint((e.touches[0].clientY-r.top)/r.height);e.preventDefault();return;}
+                if(canScroll()){dragging=true;jumpToTimelinePosition(e.touches[0]);e.preventDefault();}
+            },{passive:false});
             tl.addEventListener('touchmove',e=>{if(dragging){jumpToTimelinePosition(e.touches[0]);e.preventDefault();}},{passive:false});
             tl.addEventListener('touchend',()=>{dragging=false;});
         }
@@ -1819,16 +1843,151 @@
         if(eb)eb.textContent=pianoRollData.isExpanded?'↕ Verkleinern':'↕ Vergrößern';
         setTimeout(()=>{const nc=document.getElementById('pianoRollNotes');if(nc)pianoRollData.containerHeight=nc.offsetHeight;renderPianoRollNotes();renderPianoRollTimeline();if(cp>0&&!pianoRollPlaying){pianoRollData.currentPosition=cp;updatePianoRollVisuals(cp);}},50);
     }
+    function togglePracticeMode(){
+        practiceMode=!practiceMode;
+        practiceWaiting=null;
+        const btn=document.getElementById('practiceToggle');
+        if(btn) btn.classList.toggle('active',practiceMode);
+    }
+    function kmPlay(){
+        if(pianoRollPaused&&pianoRollPlaying){
+            // Resume from pause
+            pianoRollPaused=false;keyboardMapping.playing=true;
+            const pb=document.getElementById('kmPlayBtn'),pa=document.getElementById('kmPauseBtn');
+            if(pb){pb.disabled=true;pb.textContent='▶ Läuft...';}
+            if(pa){pa.disabled=false;pa.textContent='⏸ Pause';pa.classList.remove('paused');}
+            // Also update main pause button
+            const mpa=document.getElementById('pianoRollPauseBtn');
+            if(mpa){mpa.textContent='⏸ Pause';mpa.classList.remove('paused');}
+            return;
+        }
+        if(pianoRollPlaying){stopPianoRoll();return;}
+        keyboardMapping.playing=true;
+        playPianoRoll();
+        const pb=document.getElementById('kmPlayBtn'),sb=document.getElementById('kmStopBtn'),pa=document.getElementById('kmPauseBtn');
+        if(pb){pb.disabled=true;pb.textContent='▶ Läuft...';}
+        if(sb) sb.disabled=false;
+        if(pa) pa.disabled=false;
+    }
+    function kmPause(){
+        if(!pianoRollPlaying)return;
+        pianoRollPaused=!pianoRollPaused;
+        practiceWaiting=null;
+        const pa=document.getElementById('kmPauseBtn'),pb=document.getElementById('kmPlayBtn');
+        if(pianoRollPaused){
+            stopAllSounds();
+            if(pa){pa.textContent='▶ Weiter';pa.classList.add('paused');}
+            if(pb){pb.disabled=true;pb.textContent='▶ Abspielen';}
+        } else {
+            keyboardMapping.playing=true;
+            if(pa){pa.textContent='⏸ Pause';pa.classList.remove('paused');}
+            if(pb){pb.disabled=true;pb.textContent='▶ Läuft...';}
+        }
+        // Sync main pause
+        const mpa=document.getElementById('pianoRollPauseBtn');
+        if(mpa){mpa.textContent=pianoRollPaused?'▶ Weiter':'⏸ Pause';mpa.classList.toggle('paused',pianoRollPaused);}
+    }
+    function kmStop(){
+        keyboardMapping.playing=false;
+        stopPianoRoll();
+        const pb=document.getElementById('kmPlayBtn'),sb=document.getElementById('kmStopBtn'),pa=document.getElementById('kmPauseBtn');
+        if(pb){pb.disabled=false;pb.textContent='▶ Abspielen';}
+        if(sb) sb.disabled=true;
+        if(pa){pa.disabled=true;pa.textContent='⏸ Pause';pa.classList.remove('paused');}
+    }
+    let kmLoopActive=false, kmLoopStart=null, kmLoopEnd=null, kmLoopSettingStart=true;
+    function toggleKmLoop(){
+        kmLoopActive=!kmLoopActive;
+        const btn=document.getElementById('kmLoopBtn');
+        if(btn) btn.style.background=kmLoopActive?'#4CAF50':'#9C27B0';
+        if(!kmLoopActive){kmLoopStart=null;kmLoopEnd=null;kmLoopSettingStart=true;renderLoopMarkers();}
+        else {
+            const st=document.getElementById('kmStatus');
+            if(st) st.textContent='Klicke auf den Zeitleisten-Balken, um Start und Ende der Schleife zu setzen.';
+        }
+    }
+    function setLoopPoint(position){
+        if(!kmLoopActive)return;
+        const totalBeats=pianoRollData.totalBeats||1;
+        const beat=position*totalBeats;
+        if(kmLoopSettingStart){
+            kmLoopStart=beat;kmLoopEnd=null;kmLoopSettingStart=false;
+            const st=document.getElementById('kmStatus');
+            if(st) st.textContent='Start gesetzt. Klicke erneut für das Ende der Schleife.';
+        } else {
+            kmLoopEnd=Math.max(beat,kmLoopStart+1);
+            kmLoopSettingStart=true;
+            const st=document.getElementById('kmStatus');
+            if(st) st.textContent=`Schleife gesetzt. Wird beim Abspielen wiederholt.`;
+        }
+        renderLoopMarkers();
+    }
+    function renderLoopMarkers(){
+        const tl=document.getElementById('pianoRollTimeline');if(!tl)return;
+        tl.querySelectorAll('.loop-marker,.loop-region').forEach(el=>el.remove());
+        if(!kmLoopActive||kmLoopStart===null)return;
+        const totalBeats=pianoRollData.totalBeats||1;
+        const h=tl.offsetHeight;
+        const startPx=(kmLoopStart/totalBeats)*h;
+        const sm=document.createElement('div');sm.className='loop-marker';sm.style.cssText=`position:absolute;left:0;right:0;top:${startPx}px;height:3px;background:#4CAF50;z-index:5;pointer-events:none;`;
+        tl.appendChild(sm);
+        if(kmLoopEnd!==null){
+            const endPx=(kmLoopEnd/totalBeats)*h;
+            const em=document.createElement('div');em.className='loop-marker';em.style.cssText=`position:absolute;left:0;right:0;top:${endPx}px;height:3px;background:#f44336;z-index:5;pointer-events:none;`;
+            const rg=document.createElement('div');rg.className='loop-region';rg.style.cssText=`position:absolute;left:0;right:0;top:${startPx}px;height:${endPx-startPx}px;background:rgba(76,175,80,0.15);z-index:4;pointer-events:none;`;
+            tl.appendChild(em);tl.appendChild(rg);
+        }
+    }
+    function resolvePracticeNote(){
+        if(!practiceWaiting)return;
+        const idx=practiceWaiting.noteIdx;
+        const note=pianoRollNotes[idx];
+        if(note){
+            initAudio();
+            const lt=audioSettings.tempo;
+            playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000,note.volume||1.0);
+            if(pianoRollData._playedNotes) pianoRollData._playedNotes.add(idx);
+            const ne=pianoRollData.cachedNoteElMap.get(idx);
+            if(ne) ne.classList.add('active');
+            if(note.keyEl) highlightKey(note.keyEl,300);
+        }
+        // Sofort nächste Note als wartend setzen (für gleichzeitige Eingabe)
+        const nextIdx=idx+1;
+        if(nextIdx<pianoRollNotes.length){
+            const nextNote=pianoRollNotes[nextIdx];
+            if(nextNote&&Math.abs(nextNote.startBeat-note.startBeat)<0.01){
+                // Nächste Note startet gleichzeitig → sofort als wartend setzen
+                practiceWaiting={noteIdx:nextIdx,beat:note.startBeat};
+                const nne=pianoRollData.cachedNoteElMap.get(nextIdx);
+                if(nne) nne.classList.add('active');
+                return;
+            }
+        }
+        practiceWaiting=null;
+    }
     function togglePianoRollPause(){
         pianoRollPaused=!pianoRollPaused;
+        practiceWaiting=null;
         const btn=document.getElementById('pianoRollPauseBtn');
         if(btn){btn.textContent=pianoRollPaused?'▶ Weiter':'⏸ Pause';btn.classList.toggle('paused',pianoRollPaused);}
-        if(pianoRollPaused){stopAllSounds();disablePlayButtons(false);}else{disablePlayButtons(true);}
+        const kpa=document.getElementById('kmPauseBtn'),kpb=document.getElementById('kmPlayBtn');
+        if(kpa){kpa.textContent=pianoRollPaused?'▶ Weiter':'⏸ Pause';kpa.classList.toggle('paused',pianoRollPaused);}
+        if(pianoRollPaused){
+            stopAllSounds();disablePlayButtons(false);
+            keyboardMapping.playing=false;
+            if(kpb){kpb.disabled=true;kpb.textContent='▶ Abspielen';}
+        } else {
+            disablePlayButtons(true);
+            if(kpb){kpb.disabled=true;kpb.textContent='▶ Läuft...';}
+        }
     }
     function stopPianoRoll(){
-        pianoRollPlaying=false;pianoRollPaused=false;stopAllSounds();
+        pianoRollPlaying=false;pianoRollPaused=false;practiceWaiting=null;keyboardMapping.playing=false;stopAllSounds();
         const pb=document.getElementById('pianoRollPlayBtn'),pa=document.getElementById('pianoRollPauseBtn'),ps=document.getElementById('pianoRollStopBtn');
         if(pb){pb.disabled=false;pb.textContent='▶ Abspielen';}if(pa){pa.disabled=true;pa.textContent='⏸ Pause';pa.classList.remove('paused');}if(ps)ps.disabled=true;
+        const kpb=document.getElementById('kmPlayBtn'),ksb=document.getElementById('kmStopBtn'),kpa=document.getElementById('kmPauseBtn');
+        if(kpb){kpb.disabled=false;kpb.textContent='▶ Abspielen';}if(ksb)ksb.disabled=true;
+        if(kpa){kpa.disabled=true;kpa.textContent='⏸ Pause';kpa.classList.remove('paused');}
         if(!isPaused){isPlaying=false;disablePlayButtons(false);}
         document.querySelectorAll('.piano-roll-note').forEach(el=>{el.classList.remove('active','passed');el.style.transform='';el.style.opacity='';});
         pianoRollData.currentPosition=0;updatePianoRollVisuals(0);
@@ -1852,10 +2011,12 @@
         let totalShift=((containerHeight/beatHeight)+lastNoteEndBeat+1)*beatHeight;
         let lastFrameTime=performance.now();
         // Start: 1 Sekunde Vorlauf (Töne laufen nach ~1s an den Tasten an)
-        const leadBeats=1600/audioSettings.tempo;
+        const leadBeats=2500/audioSettings.tempo;
         let currentBeat=-leadBeats;
         let pauseStart=0,pauseStartPosition=0;
-        let activeRootKeys=new Map(),playedNotes=new Set(),finishedNotes=new Set();
+        let activeRootKeys=new Map(),finishedNotes=new Set();
+        pianoRollData._playedNotes=new Set();
+        const playedNotes=pianoRollData._playedNotes;
 
         function animate(){
             if(shouldStop||!pianoRollPlaying){cleanup();return;}
@@ -1888,6 +2049,29 @@
                 }
                 pauseStart=0;pauseStartPosition=0;lastFrameTime=now;
             }
+            // Practice mode: freeze NUR wenn Note an der Spiellinie angekommen ist
+            if(keyboardMapping.playing&&practiceMode&&practiceWaiting){
+                const freezeBeat=practiceWaiting.beat; // = note.startBeat
+                const delta2=now-lastFrameTime;lastFrameTime=now;
+                const lt2=audioSettings.tempo;
+                const tentativeBeat=currentBeat+delta2/lt2;
+                if(tentativeBeat>=freezeBeat){
+                    // An der Linie angekommen → einfrieren
+                    currentBeat=freezeBeat;
+                    const freezeShift=(freezeBeat+containerHeight/beatHeight)*beatHeight;
+                    const freezeTs=`translateY(${freezeShift}px)`;
+                    for(let i=0;i<pianoRollData.cachedNoteEls.length;i++)pianoRollData.cachedNoteEls[i].style.transform=freezeTs;
+                    requestAnimationFrame(animate);return;
+                }
+                // Noch nicht an der Linie → weiterscrollen (Input aber schon akzeptiert)
+                currentBeat=tentativeBeat;
+                const shift2=(currentBeat+containerHeight/beatHeight)*beatHeight;
+                const ts2=`translateY(${shift2}px)`;
+                for(let i=0;i<pianoRollData.cachedNoteEls.length;i++)pianoRollData.cachedNoteEls[i].style.transform=ts2;
+                const tsbn2=containerHeight/beatHeight+lastNoteEndBeat+1;
+                pianoRollData.currentPosition=Math.min((currentBeat+containerHeight/beatHeight)/tsbn2,1);
+                requestAnimationFrame(animate);return;
+            }
             const delta=now-lastFrameTime;lastFrameTime=now;
             const lt=audioSettings.tempo;currentBeat+=delta/lt;
             const shift=(currentBeat+containerHeight/beatHeight)*beatHeight;
@@ -1902,24 +2086,62 @@
             const vpe=document.getElementById('pianoRollTimelineViewport');
             if(vpe&&tle){const vh=parseFloat(vpe.style.height)||30;const tp=Math.max(0,Math.min(1,currentBeat/(totalBeats||1)));vpe.style.top=Math.min(tp*tle.offsetHeight,tle.offsetHeight-vh)+'px';}
             // Play notes
+            const isKmMode=keyboardMapping.playing;
+            const bufferBeats=isKmMode?200/lt:0; // 200ms Vorlauf für Input
             pianoRollNotes.forEach((note,idx)=>{
                 const ne=pianoRollData.cachedNoteElMap.get(idx);if(!ne)return;
+                // Pufferzone: Input akzeptieren bevor Note die Linie erreicht
+                if(isKmMode&&practiceMode&&!practiceWaiting&&currentBeat>=note.startBeat-bufferBeats&&!playedNotes.has(idx)){
+                    practiceWaiting={noteIdx:idx,beat:note.startBeat};
+                    ne.classList.add('active');
+                    checkPressedKeysForNext();
+                    if(!practiceWaiting)return; // wurde sofort aufgelöst
+                }
+                // Erst an der Linie einfrieren (nicht früher)
+                if(isKmMode&&practiceMode&&practiceWaiting&&practiceWaiting.noteIdx===idx&&currentBeat>=note.startBeat){
+                    currentBeat=note.startBeat;
+                    return;
+                }
                 if(currentBeat>=note.startBeat&&!playedNotes.has(idx)){
-                    playedNotes.add(idx);ne.classList.add('active');ne.classList.remove('passed');
-                    playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000,note.volume||1.0);
-                    if(note.keyEl){if(note.isRoot){note.keyEl.classList.add('held');activeRootKeys.set(note.tone+'-'+note.stageIdx,note.keyEl);}else{highlightKey(note.keyEl,note.duration*lt*0.9);}}
+                    if(isKmMode&&!practiceMode){
+                        // Frei-Modus ohne Sound
+                        playedNotes.add(idx);ne.classList.add('active');ne.classList.remove('passed');
+                        if(note.keyEl){if(note.isRoot){note.keyEl.classList.add('held');activeRootKeys.set(note.tone+'-'+note.stageIdx,note.keyEl);}else{highlightKey(note.keyEl,note.duration*lt*0.9);}}
+                        return;
+                    }
+                    if(!isKmMode){
+                        // Normal-Modus: automatischer Sound
+                        playedNotes.add(idx);ne.classList.add('active');ne.classList.remove('passed');
+                        playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000,note.volume||1.0);
+                        if(note.keyEl){if(note.isRoot){note.keyEl.classList.add('held');activeRootKeys.set(note.tone+'-'+note.stageIdx,note.keyEl);}else{highlightKey(note.keyEl,note.duration*lt*0.9);}}
+                    }
                 }
                 if(currentBeat>=note.startBeat+note.duration&&!finishedNotes.has(idx)){
                     finishedNotes.add(idx);ne.classList.remove('active');ne.classList.add('passed');
                     const rk=note.tone+'-'+note.stageIdx;if(note.isRoot&&activeRootKeys.has(rk)){activeRootKeys.get(rk).classList.remove('held');activeRootKeys.delete(rk);}
                 }
             });
+            // Loop: zurück zum Start wenn Ende erreicht
+            if(kmLoopActive&&kmLoopStart!==null&&kmLoopEnd!==null&&currentBeat>=kmLoopEnd){
+                currentBeat=kmLoopStart;
+                playedNotes.clear();finishedNotes.clear();practiceWaiting=null;
+                activeRootKeys.forEach(k=>k.classList.remove('held'));activeRootKeys.clear();
+                pianoRollData.cachedNoteEls.forEach(el=>el.classList.remove('active','passed'));
+                // Noten vor dem Loop-Start als gespielt markieren
+                pianoRollNotes.forEach((n,idx)=>{
+                    if(n.startBeat+n.duration<=kmLoopStart){playedNotes.add(idx);finishedNotes.add(idx);}
+                });
+            }
             if(currentBeat<lastNoteEndBeat+1&&pianoRollPlaying&&!shouldStop)requestAnimationFrame(animate);else cleanup();
         }
         function cleanup(){
-            pianoRollPlaying=false;isPlaying=false;pianoRollPaused=false;
+            pianoRollPlaying=false;isPlaying=false;pianoRollPaused=false;practiceWaiting=null;
             activeRootKeys.forEach(k=>k.classList.remove('held'));activeRootKeys.clear();
             if(pb){pb.disabled=false;pb.textContent='▶ Abspielen';}if(pa){pa.disabled=true;pa.textContent='⏸ Pause';pa.classList.remove('paused');}if(ps)ps.disabled=true;
+            const kpb=document.getElementById('kmPlayBtn'),ksb=document.getElementById('kmStopBtn'),kpa=document.getElementById('kmPauseBtn');
+            if(kpb){kpb.disabled=false;kpb.textContent='▶ Abspielen';}if(ksb)ksb.disabled=true;
+            if(kpa){kpa.disabled=true;kpa.textContent='⏸ Pause';kpa.classList.remove('paused');}
+            keyboardMapping.playing=false;
             disablePlayButtons(false);
             setTimeout(()=>{document.querySelectorAll('.piano-roll-note').forEach(el=>{el.classList.remove('active','passed');el.style.transform='';});pianoRollData.currentPosition=0;updatePianoRollVisuals(0);},500);
         }
@@ -2114,9 +2336,10 @@
     //  KEYBOARD MAPPING
     // =====================================================================
     const keyboardMapping={
-        left:{keys:['f','d','s','a'], tones:[]}, // höchster=f, tiefster=a
+        left:{keys:['a','s','d','f'], tones:[]}, // a=tiefster(kl.Finger), f=höchster(Zeigefinger)
         right:{keys:['j','k','l','ö',' '], nums:[1,2,3,4,5]},
-        activeLeft:null, editing:null
+        activeLeft:null, editing:null, playing:false,
+        leftSeqIdx:0, rightSeqIdx:0
     };
 
     function updateKeyboardMapping(){
@@ -2129,22 +2352,32 @@
         const roots=state.selectedProgression.map(deg=>state.currentScaleTones[deg]);
         // Einzigartige Töne, Reihenfolge beibehalten für Stufen-Zuordnung
         const uniqueRoots=[...new Set(roots)];
-        // Sortiert nach Position in der Skala (tiefste zuerst) relativ zum Startton
+        // Sortiert nach Position auf der Tastatur (tiefste=links, höchste=rechts)
+        // Startton ist immer höchste Position (Daumen), Rest aufsteigend ab tiefster
         const si=CONFIG.allTones.indexOf(state.currentTone);
         uniqueRoots.sort((a,b)=>{
-            const ai=(CONFIG.allTones.indexOf(a)-si+12)%12;
-            const bi=(CONFIG.allTones.indexOf(b)-si+12)%12;
+            let ai=(CONFIG.allTones.indexOf(a)-si+12)%12;
+            let bi=(CONFIG.allTones.indexOf(b)-si+12)%12;
+            // Startton (offset 0) ist höchster → auf 12 setzen
+            if(ai===0) ai=12;
+            if(bi===0) bi=12;
             return ai-bi;
         });
         keyboardMapping.left.tones=uniqueRoots;
 
-        // Linke Hand Tabelle
+        // Linke Hand Tabelle: Kleiner Finger (tiefster) → Zeigefinger (höchster)
+        const fingerNamesL=state.language==='de'?['Kleiner Finger','Ringfinger','Mittelfinger','Zeigefinger']:['Pinky','Ring','Middle','Index'];
         const lt=document.getElementById('kmLeftTable');
         lt.innerHTML='';
+        const cnt=uniqueRoots.length;
         const lhr=document.createElement('tr');
-        lhr.innerHTML='<th>Stufe</th>';
-        uniqueRoots.forEach(t=>lhr.innerHTML+=`<th>${t}</th>`);
+        lhr.innerHTML='<th>Finger</th>';
+        for(let i=0;i<cnt;i++) lhr.innerHTML+=`<th>${fingerNamesL[i]||''}</th>`;
         lt.appendChild(lhr);
+        const ltr=document.createElement('tr');
+        ltr.innerHTML='<td>Ton</td>';
+        uniqueRoots.forEach(t=>ltr.innerHTML+=`<td>${t}</td>`);
+        lt.appendChild(ltr);
         const lkr=document.createElement('tr');
         lkr.innerHTML='<td>Taste</td>';
         uniqueRoots.forEach((t,i)=>{
@@ -2157,14 +2390,19 @@
         });
         lt.appendChild(lkr);
 
-        // Rechte Hand Tabelle
+        // Rechte Hand Tabelle: Zeigefinger → Kleiner Finger
+        const fingerNamesR=state.language==='de'?['Zeigefinger','Mittelfinger','Ringfinger','Kleiner Finger','Daumen']:['Index','Middle','Ring','Pinky','Thumb'];
         const rt=document.getElementById('kmRightTable');
         rt.innerHTML='';
-        const rhr=document.createElement('tr');
-        rhr.innerHTML='<th>Ton</th>';
         const toneCount=state.melodyTab==='random'?state.randomToneCount:5;
-        for(let i=0;i<toneCount;i++) rhr.innerHTML+=`<th>${i+1}</th>`;
+        const rhr=document.createElement('tr');
+        rhr.innerHTML='<th>Finger</th>';
+        for(let i=0;i<toneCount;i++) rhr.innerHTML+=`<th>${fingerNamesR[i]||''}</th>`;
         rt.appendChild(rhr);
+        const rtr=document.createElement('tr');
+        rtr.innerHTML='<td>Ton Nr.</td>';
+        for(let i=0;i<toneCount;i++) rtr.innerHTML+=`<td>${i+1}</td>`;
+        rt.appendChild(rtr);
         const rkr=document.createElement('tr');
         rkr.innerHTML='<td>Taste</td>';
         for(let i=0;i<toneCount;i++){
@@ -2186,19 +2424,22 @@
     }
 
     function resetKeyboardMapping(){
-        keyboardMapping.left.keys=['f','d','s','a'];
+        keyboardMapping.left.keys=['a','s','d','f'];
         keyboardMapping.right.keys=['j','k','l','ö',' '];
         keyboardMapping.editing=null;
+        keyboardMapping.leftSeqIdx=0;keyboardMapping.rightSeqIdx=0;
         updateKeyboardMapping();
         document.getElementById('kmStatus').textContent='Belegung zurückgesetzt.';
     }
 
-    // Tastatur-Events
+    // Tastatur-Events (mit Key-Repeat Schutz)
+    const pressedKeys=new Set();
+    document.addEventListener('keyup',e=>{pressedKeys.delete(e.key.toLowerCase());});
     document.addEventListener('keydown',e=>{
         if(!state.selectedProgression.length||state.selectedMelodyRow===null)return;
         const key=e.key.toLowerCase();
 
-        // Edit-Modus: Taste zuweisen
+        // Edit-Modus
         if(keyboardMapping.editing){
             const ed=keyboardMapping.editing;
             const newKey=e.key===' '?' ':key;
@@ -2212,29 +2453,48 @@
             return;
         }
 
-        // Linke Hand: Grundton spielen
-        const leftIdx=keyboardMapping.left.keys.indexOf(key);
-        if(leftIdx>=0&&leftIdx<keyboardMapping.left.tones.length){
+        // Key-Repeat Schutz
+        if(pressedKeys.has(key))return;
+        pressedKeys.add(key);
+
+        // Im Tastatur-Übungsmodus: versuche wartende Note aufzulösen
+        if(keyboardMapping.playing&&practiceMode&&practiceWaiting){
             e.preventDefault();
-            const tone=keyboardMapping.left.tones[leftIdx];
-            keyboardMapping.activeLeft=leftIdx;
-            initAudio();
-            playPianoTone(getFrequency(tone,3),1.5);
-            // Visuell: alle linke-Hand Zellen highlighten
-            document.querySelectorAll('#kmLeftTable td.km-active').forEach(el=>el.classList.remove('km-active'));
-            const cells=document.querySelectorAll(`#kmLeftTable td.km-key[data-index="${leftIdx}"]`);
-            cells.forEach(c=>c.classList.add('km-active'));
-            document.getElementById('kmStatus').textContent=`Linke Hand: ${tone} (Taste ${key.toUpperCase()})`;
+            tryResolvePracticeKey(key);
             return;
         }
 
-        // Rechte Hand: Melodieton spielen
-        const rightIdx=keyboardMapping.right.keys.indexOf(key==' '?' ':key);
-        if(rightIdx>=0){
+        // Frei-Modus (ohne Übungsmodus)
+        let handled=false;
+        // Linke Hand
+        const leftMatches=[];
+        keyboardMapping.left.keys.forEach((k,i)=>{if(k===key&&i<keyboardMapping.left.tones.length)leftMatches.push(i);});
+        if(leftMatches.length>0){
+            e.preventDefault(); handled=true;
+            // Bei Mehrfachbelegung: sequentiell durchzählen
+            let idx;
+            if(leftMatches.length>1){
+                idx=leftMatches[keyboardMapping.leftSeqIdx % leftMatches.length];
+                keyboardMapping.leftSeqIdx++;
+            } else {
+                idx=leftMatches[0];
+            }
+            const tone=keyboardMapping.left.tones[idx];
+            keyboardMapping.activeLeft=idx;
+            keyboardMapping.rightSeqIdx=0; // rechte Hand Sequenz resetten
+            initAudio();
+            playPianoTone(getFrequency(tone,3),1.5);
+            document.querySelectorAll('#kmLeftTable td.km-active').forEach(el=>el.classList.remove('km-active'));
+            document.querySelectorAll(`#kmLeftTable td.km-key[data-index="${idx}"]`).forEach(c=>c.classList.add('km-active'));
+            document.getElementById('kmStatus').textContent=`Linke Hand: ${tone} (Taste ${key.toUpperCase()})`;
+        }
+        // Rechte Hand (auch wenn linke Hand schon verarbeitet wurde)
+        const rightMatches=[];
+        keyboardMapping.right.keys.forEach((k,i)=>{if(k===(key===' '?' ':key))rightMatches.push(i);});
+        if(rightMatches.length>0&&!handled){
             e.preventDefault();
-            // Welcher Ton? Abhängig von der aktuellen Stufe
             if(keyboardMapping.activeLeft===null){
-                document.getElementById('kmStatus').textContent='Erst linke Hand spielen!';
+                document.getElementById('kmStatus').textContent='Spiele zuerst einen Grundton (linke Hand: A/S/D/F)';
                 return;
             }
             const mp=getCurrentMelodyPattern();
@@ -2244,7 +2504,6 @@
             mp.forEach((val,colIdx)=>{
                 if(val===1){
                     const ci=colOrder[colIdx]!==undefined?colOrder[colIdx]:colIdx;
-                    // Hole den Ton basierend auf der aktuellen Progression
                     const progIdx=keyboardMapping.activeLeft;
                     const deg=state.selectedProgression[progIdx]||state.selectedProgression[0];
                     const terzIdx=(deg+2)%7;
@@ -2252,16 +2511,67 @@
                     activeTones.push(state.currentScaleTones[toneIdx]);
                 }
             });
-            if(rightIdx<activeTones.length){
+            // Bei Mehrfachbelegung: sequentiell durchzählen
+            let ridx;
+            if(rightMatches.length>1){
+                ridx=rightMatches[keyboardMapping.rightSeqIdx % rightMatches.length];
+                keyboardMapping.rightSeqIdx++;
+            } else {
+                ridx=rightMatches[0];
+            }
+            if(ridx<activeTones.length){
                 initAudio();
-                playPianoTone(getFrequency(activeTones[rightIdx],4),0.8);
+                playPianoTone(getFrequency(activeTones[ridx],4),0.8);
                 document.querySelectorAll('#kmRightTable td.km-active').forEach(el=>el.classList.remove('km-active'));
-                const cells=document.querySelectorAll(`#kmRightTable td.km-key[data-index="${rightIdx}"]`);
-                cells.forEach(c=>{c.classList.add('km-active');setTimeout(()=>c.classList.remove('km-active'),300);});
-                document.getElementById('kmStatus').textContent=`Rechte Hand: ${activeTones[rightIdx]} (Ton ${rightIdx+1})`;
+                document.querySelectorAll(`#kmRightTable td.km-key[data-index="${ridx}"]`).forEach(c=>{c.classList.add('km-active');setTimeout(()=>c.classList.remove('km-active'),300);});
+                document.getElementById('kmStatus').textContent=`Rechte Hand: ${activeTones[ridx]} (Ton ${ridx+1})`;
             }
         }
     });
+
+    // Übungsmodus: versuche eine wartende Note mit einer Taste aufzulösen
+    function tryResolvePracticeKey(key){
+        if(!practiceWaiting)return;
+        const wn=pianoRollNotes[practiceWaiting.noteIdx];
+        if(!wn)return;
+
+        if(wn.isRoot){
+            // Root-Note: linke Hand prüfen
+            const leftMatches=[];
+            keyboardMapping.left.keys.forEach((k,i)=>{if(k===key&&i<keyboardMapping.left.tones.length)leftMatches.push(i);});
+            const matchIdx=leftMatches.find(i=>keyboardMapping.left.tones[i]===wn.tone);
+            if(matchIdx!==undefined){
+                keyboardMapping.activeLeft=matchIdx;
+                resolvePracticeNote();
+                document.getElementById('kmStatus').textContent=`✓ Linke Hand: ${wn.tone}`;
+                // Nach Root: sofort prüfen ob nächste Note mit gedrückten Tasten lösbar ist
+                checkPressedKeysForNext();
+            } else {
+                document.getElementById('kmStatus').textContent=`✗ Falscher Grundton – erwarte ${wn.tone}`;
+            }
+        } else {
+            // Melodie-Note: rechte Hand prüfen
+            const rightMatches=[];
+            keyboardMapping.right.keys.forEach((k,i)=>{if(k===(key===' '?' ':key))rightMatches.push(i);});
+            const correctIdx=wn.num-1;
+            if(rightMatches.includes(correctIdx)){
+                resolvePracticeNote();
+                document.getElementById('kmStatus').textContent=`✓ Rechte Hand: ${wn.tone} (Ton ${wn.num})`;
+                checkPressedKeysForNext();
+            } else {
+                document.getElementById('kmStatus').textContent=`✗ Falsche Taste – erwarte Ton ${wn.num}`;
+            }
+        }
+    }
+
+    // Nach Auflösung: prüfe ob bereits gedrückte Tasten die nächste Note lösen
+    function checkPressedKeysForNext(){
+        if(!practiceWaiting)return;
+        for(const pk of pressedKeys){
+            tryResolvePracticeKey(pk);
+            if(!practiceWaiting)break;
+        }
+    }
 
     // =====================================================================
     //  GUIDED STEPS
