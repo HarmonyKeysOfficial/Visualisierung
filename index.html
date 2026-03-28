@@ -1,3 +1,6 @@
+685 · HTML
+Kopieren
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -6,13 +9,13 @@
     <meta name="description" content="Interaktiver Tonleiter-Visualisierer für Klavier-Anfänger. Lerne Tonleitern, Akkorde und Melodien visuell.">
     <meta name="theme-color" content="#4CAF50">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Tonleiter-Visualisierer v6.5.6</title>
+    <title>Tonleiter-Visualisierer v6.8.5</title>
     <style>
         /* ===== RESET & BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; zoom: 0.95; }
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; zoom: 0.85; }
         h1 { text-align: center; margin-bottom: 20px; font-size: 1.8em; }
-
+ 
         /* ===== TOOLBAR ===== */
         .toolbar { max-width: 1600px; margin: 0 auto 20px auto; background: white; padding: 15px 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
         .toolbar-section { display: flex; align-items: center; gap: 10px; }
@@ -23,13 +26,13 @@
         .reset-btn:hover { background: #ffebee; }
         .theme-btn { padding: 5px 12px; border: 2px solid #666; background: white; cursor: pointer; border-radius: 5px; font-size: 16px; transition: all 0.3s; }
         .theme-btn:hover { background: #f0f0f0; }
-
+ 
         /* ===== STEP HINTS ===== */
         .step-hint { display: flex; align-items: center; background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border: 2px solid #42A5F5; border-radius: 10px; padding: 14px 18px; margin-bottom: 14px; font-size: 14px; line-height: 1.5; color: #1565C0; transition: all 0.4s ease; }
         .step-hint .step-number { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #1565C0; color: white; border-radius: 50%; font-weight: bold; font-size: 14px; margin-right: 10px; flex-shrink: 0; }
         .step-hint.hint-done { background: linear-gradient(135deg, #f5f5f5, #eeeeee); border-color: #ccc; color: #888; }
         .step-hint.hint-done .step-number { background: #bbb; }
-
+ 
         /* ===== MODULES ===== */
         .container { max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
         .module { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -38,7 +41,7 @@
         .module.guided-dimmed { opacity: 0.3; pointer-events: none; filter: grayscale(40%); transition: opacity 0.5s ease, filter 0.5s ease; }
         .module.guided-active { opacity: 1; pointer-events: auto; filter: none; transition: opacity 0.5s ease, filter 0.5s ease; }
         .module.guided-done { opacity: 1; pointer-events: auto; filter: none; }
-
+ 
         /* ===== PIANO KEYS ===== */
         .piano-wrapper { margin: 15px 0; padding: 10px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .piano { position: relative; margin: 0 auto; }
@@ -57,13 +60,13 @@
         .black-key-label { color: #ddd; text-align: center; font-weight: bold; pointer-events: none; position: absolute; width: 100%; }
         .black-key.in-scale .black-key-label { color: black; }
         .white-key.not-in-scale .white-key-label { color: #ccc; }
-
+ 
         /* ===== SCALE TYPE BUTTONS ===== */
         .scale-type-selector { display: flex; gap: 10px; justify-content: center; margin-bottom: 15px; }
         .scale-type-btn { padding: 10px 24px; font-size: 15px; font-weight: bold; border: 3px solid #333; background: white; cursor: pointer; border-radius: 8px; transition: all 0.15s; }
         .scale-type-btn.active { background-color: #4CAF50; color: white; border-color: #4CAF50; }
         .scale-type-btn:hover:not(.active) { background: #f0f0f0; }
-
+ 
         /* ===== PROGRESSION ===== */
         .degree-selector { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
         .degree-btn { padding: 10px 18px; font-size: 15px; font-weight: bold; border: 3px solid #333; background-color: white; cursor: pointer; border-radius: 8px; transition: all 0.15s; }
@@ -86,7 +89,7 @@
         .progression-controls { text-align: center; margin-bottom: 15px; }
         .clear-btn { padding: 8px 16px; font-size: 13px; border: 2px solid #d32f2f; background-color: white; color: #d32f2f; cursor: pointer; border-radius: 5px; font-weight: bold; }
         .clear-btn:hover { background-color: #ffebee; }
-
+ 
         /* ===== MELODY TABS ===== */
         .melody-tab-selector { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
         .melody-tab-btn { padding: 10px 20px; border: 2px solid #666; background: #f5f5f5; cursor: pointer; border-radius: 8px; font-weight: bold; font-size: 13px; transition: all 0.2s; }
@@ -95,7 +98,7 @@
         .tone-count-label { font-size: 12px; font-weight: bold; color: #666; margin-right: 2px; }
         .tone-count-btn { width: 32px; height: 32px; border: 2px solid #999; background: #f0f0f0; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; transition: all 0.2s; }
         .tone-count-btn.active { background: #FF9800; color: white; border-color: #FF9800; }
-
+ 
         /* ===== LAGE SELECTOR ===== */
         .lage-selector { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; padding: 10px; background: #f0f0f0; border-radius: 8px; }
         .lage-label { font-weight: bold; font-size: 13px; color: #555; margin-right: 4px; }
@@ -106,7 +109,7 @@
         body.dark-mode .lage-label { color: #ccc; }
         body.dark-mode .lage-btn { background: #2d2d44; color: #ddd; border-color: #555; }
         body.dark-mode .lage-btn.active { background: #2196F3; color: white; border-color: #2196F3; }
-
+ 
         /* ===== MELODY TABLE ===== */
         .info-box { background: #e3f2fd; border: 2px solid #1565C0; border-radius: 8px; padding: 12px; margin-bottom: 15px; font-size: 13px; }
         .info-box h4 { color: #1565C0; margin-bottom: 8px; }
@@ -124,7 +127,7 @@
         .melody-table tbody tr:hover td { background: #e3f2fd !important; }
         .melody-table tbody tr.selected-row { outline: 3px solid #1565C0; }
         .melody-table tbody tr.selected-row td { background: #bbdefb !important; }
-
+ 
         /* ===== MELODY PIANOS ===== */
         .melody-piano-section { margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #e8f5e9, #e3f2fd); border-radius: 10px; border: 2px solid #4CAF50; }
         .melody-piano-section.tonic-section { border-color: #6FE2FD; background: linear-gradient(135deg, #DAFAFF, #CAEEFE); }
@@ -154,7 +157,7 @@
         .finger-hint { display: flex; justify-content: center; gap: 30px; margin: 8px 0 6px; font-size: 13px; color: #555; font-weight: bold; }
         .finger-hint .fh-left { color: #1565C0; }
         .finger-hint .fh-right { color: #C62828; }
-
+ 
         /* ===== OCTAVE COLORS ===== */
         .melody-piano-section .white-key.left-octave,
         .melody-piano-section .white-key.right-octave { background: linear-gradient(180deg, #fff, #f5f5f5) !important; }
@@ -164,7 +167,7 @@
         .melody-piano-section .white-key.right-octave.not-in-scale { background: #6d6d6d !important; }
         .melody-piano-section .black-key.left-octave.not-in-scale,
         .melody-piano-section .black-key.right-octave.not-in-scale { background: #6d6d6d !important; }
-
+ 
         /* ===== PLAY BUTTONS ===== */
         .play-stage-btn { padding: 8px 18px; border: 2px solid #4CAF50; background: #4CAF50; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .play-stage-btn:hover { background: #43A047; }
@@ -179,7 +182,7 @@
         .loop-btn { padding: 8px 16px; border: 2px solid #9C27B0; background: white; color: #9C27B0; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .loop-btn:hover { background: #f3e5f5; }
         .loop-btn.active { background: #9C27B0; color: white; }
-
+ 
         /* ===== PLAYING/HELD ANIMATIONS ===== */
         .white-key.playing, .white-key.left-octave.playing, .white-key.right-octave.playing,
         .piano .white-key.playing, .melody-piano-extended .white-key.playing {
@@ -192,7 +195,7 @@
             background: linear-gradient(180deg, #FFF59D, #FFEE58) !important; border-color: #FBC02D !important; box-shadow: 0 0 20px rgba(255,235,59,0.8) !important;
         }
         .black-key.held { background: linear-gradient(180deg, #FFD54F, #FFCA28) !important; border-color: #FFB300 !important; box-shadow: 0 0 15px rgba(255,193,7,0.8) !important; }
-
+ 
         /* ===== AUDIO CONTROLS ===== */
         .audio-controls { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; padding: 10px; background: #f5f5f5; border-radius: 8px; margin-top: 15px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
         .play-all-container { display: flex; justify-content: center; gap: 10px; margin: 0 0 12px 0; padding: 10px; background: #f5f5f5; border-radius: 0 0 10px 10px; }
@@ -204,11 +207,9 @@
         .piano-roll-audio .audio-control { gap: 5px; }
         .piano-roll-audio .audio-control label { min-width: auto; font-size: 12px; }
         .piano-roll-audio .audio-control input[type="range"] { width: 80px; }
-
+ 
         /* ===== PIANO ROLL ===== */
         .piano-roll-wrapper { margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 10px; border: 2px solid #ddd; position: relative; }
-        .piano-roll-wrapper.expanded .piano-roll-notes { height: 580px; }
-        .piano-roll-wrapper.expanded .piano-roll-timeline { height: 580px; }
         .piano-roll-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap; }
         .piano-roll-title { font-size: 16px; font-weight: bold; color: #333; }
         .piano-roll-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -218,8 +219,6 @@
         .piano-roll-btn.pause-btn { background: #FF9800; border-color: #FF9800; }
         .piano-roll-btn.pause-btn:hover { background: #F57C00; }
         .piano-roll-btn.pause-btn.paused { background: #4CAF50; border-color: #4CAF50; }
-        .piano-roll-btn.expand-btn { background: #2196F3; border-color: #2196F3; }
-        .piano-roll-btn.expand-btn:hover { background: #1976D2; }
         .piano-roll-btn.stop-btn { background: #f44336; border-color: #f44336; }
         .piano-roll-btn.stop-btn:hover { background: #d32f2f; }
         .piece-gen-btn { background: #7B1FA2 !important; border-color: #7B1FA2 !important; }
@@ -271,27 +270,33 @@
         .pr-help-section p { margin: 0; font-size: 13px; line-height: 1.5; color: #555; }
         .pr-help-close { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 22px; cursor: pointer; color: #999; }
         .pr-help-close:hover { color: #333; }
-
+ 
         /* ===== KEYBOARD MAPPING ===== */
-        .keyboard-mapping-module { margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f5f5f5, #e8eaf6); border-radius: 12px; border: 2px solid #5C6BC0; }
-        .km-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .keyboard-mapping-module { margin-top: 10px; padding: 15px; background: linear-gradient(135deg, #f5f5f5, #e8eaf6); border-radius: 12px; border: 2px solid #5C6BC0; }
+        .km-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
         .km-header h3 { margin: 0; font-size: 16px; font-weight: bold; color: #333; }
-        .km-hint { font-size: 14px; color: #666; margin-bottom: 12px; }
         .km-reset-btn { padding: 10px 18px; border: 2px solid #5C6BC0; background: white; color: #5C6BC0; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .km-reset-btn:hover { background: #e8eaf6; }
         .km-tables { display: flex; gap: 20px; flex-wrap: wrap; }
-        .km-section { flex: 1; min-width: 200px; }
+        .km-section { flex: 1; min-width: 0; overflow-x: auto; }
         .km-section h4 { margin: 0 0 8px; font-size: 14px; color: #555; }
-        .km-table { width: 100%; border-collapse: collapse; }
-        .km-table th, .km-table td { border: 2px solid #999; padding: 8px 12px; text-align: center; font-size: 14px; font-weight: bold; }
+        .km-table { width: 100%; border-collapse: collapse; table-layout: auto; }
+        .km-table th, .km-table td { border: 2px solid #999; padding: 6px 8px; text-align: center; font-size: 13px; font-weight: bold; white-space: nowrap; }
         .km-table th { background: #e8eaf6; color: #333; }
         .km-table td { background: white; }
-        .km-table td.km-key { background: #fff3e0; color: #E65100; cursor: pointer; min-width: 50px; }
+        .km-table td.km-key { background: #fff3e0; color: #E65100; cursor: pointer; }
+        .km-table td.km-key.km-left { background: #e3f2fd; color: #1565C0; }
+        .km-table td.km-key.km-left:hover { background: #bbdefb; }
+        .km-table td.km-key.km-right { background: #fce4ec; color: #C62828; }
+        .km-table td.km-key.km-right:hover { background: #f8bbd0; }
         .km-table td.km-key:hover { background: #ffe0b2; }
         .km-table td.km-key.editing { background: #ffcc80; outline: 3px solid #FF9800; }
         .km-table td.km-active { background: #c8e6c9 !important; }
         .km-status { text-align: center; margin-top: 12px; font-size: 13px; color: #777; font-style: italic; }
-
+ 
+        /* ===== KEYBOARD LABELS ON PIANO ===== */
+        .piano-key-label { position: absolute; font-size: 13px; font-weight: bold; text-align: center; pointer-events: none; z-index: 10; text-transform: uppercase; }
+ 
         /* ===== DARK MODE ===== */
         body.dark-mode { background-color: #1a1a2e; color: #e0e0e0; }
         body.dark-mode h1 { color: #fff; }
@@ -363,16 +368,20 @@
         body.dark-mode .km-table th { background: #3d3d5c; color: #e0e0e0; border-color: #666; }
         body.dark-mode .km-table td { background: #2d2d44; color: #e0e0e0; border-color: #555; }
         body.dark-mode .km-table td.km-key { background: #3d3520; color: #FFB74D; }
+        body.dark-mode .km-table td.km-key.km-left { background: #1a2a3d; color: #90cdf4; }
+        body.dark-mode .km-table td.km-key.km-right { background: #3d1a2a; color: #ef9a9a; }
         body.dark-mode .km-status { color: #999; }
         body.dark-mode .melody-piano-section .white-key.left-octave,
         body.dark-mode .melody-piano-section .white-key.right-octave { background: linear-gradient(180deg, #f5f5f5, #e8e8e8) !important; }
         body.dark-mode .melody-piano-section .black-key.left-octave.in-scale,
         body.dark-mode .melody-piano-section .black-key.right-octave.in-scale { background: linear-gradient(180deg, #f5f5f5, #e0e0e0) !important; border-color: #999; }
-
+ 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
             .toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
             .toolbar-section { flex-wrap: wrap; justify-content: center; }
+            .km-tables { flex-direction: column; gap: 12px; }
+            .km-header { flex-direction: column; gap: 8px; align-items: flex-start; }
         }
         @media (max-width: 600px) {
             body { padding: 10px; }
@@ -389,6 +398,8 @@
             .piano-roll-controls { flex-wrap: wrap; gap: 4px; }
             .piano-roll-btn { padding: 6px 8px; font-size: 11px; }
             .piano-roll-audio { flex-direction: column; gap: 6px; }
+            .km-table th, .km-table td { padding: 4px 6px; font-size: 12px; }
+            .keyboard-mapping-module { padding: 12px; }
         }
         @media (hover: none) and (pointer: coarse) {
             .white-key:hover, .black-key:hover { background-color: inherit; }
@@ -416,10 +427,10 @@
             <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
         </div>
     </div>
-
+ 
     <h1 data-i18n="title">Tonleiter-Visualisierer</h1>
     <div style="text-align:center;margin:-10px 0 15px;"><span class="pr-info-badge" onclick="showMainHelp()" title="Bedienungsanleitung" style="font-size:16px;width:28px;height:28px;line-height:28px;">ℹ</span></div>
-
+ 
     <div class="container" id="moduleContainer">
         <!-- MODULE 1: Startton wählen -->
         <div class="module" data-module-id="tone-select">
@@ -427,7 +438,7 @@
             <div class="step-hint" data-step="1"><span class="step-number">1</span><span class="step-text" data-i18n="hintStep1">Klicke auf eine Taste, um deinen Startton zu wählen.</span></div>
             <div class="piano-wrapper"><div id="piano-select" class="piano"></div></div>
         </div>
-
+ 
         <!-- MODULE 2: Tonleiter -->
         <div class="module" data-module-id="scale-display">
             <div class="module-header"><span class="module-title" data-i18n="scaleOnKeyboard">Tonleiter auf der Klaviatur</span></div>
@@ -438,7 +449,7 @@
             </div>
             <div class="piano-wrapper"><div id="piano-scale" class="piano"></div></div>
         </div>
-
+ 
         <!-- MODULE 3: Akkordprogression -->
         <div class="module" data-module-id="progression">
             <div class="module-header"><span class="module-title" data-i18n="progressionTitle">Akkordprogression erstellen</span></div>
@@ -468,22 +479,21 @@
             <div class="progression-display" id="progressionDisplay">Ausgewählte Stufen erscheinen hier...</div>
             <div class="progression-controls"><button class="clear-btn" onclick="clearProgression()" data-i18n="clearProgression">Progression löschen</button></div>
         </div>
-
+ 
         <!-- MODULE 4: Melodie-Generator -->
         <div class="module" data-module-id="melody-generator">
             <div class="module-header"><span class="module-title" data-i18n="melodyTitle">Melodie-Generator</span></div>
             <div class="step-hint" data-step="4"><span class="step-number">4</span><span class="step-text" data-i18n="hintStep4">Wähle ein Muster – es bestimmt, welche Töne gespielt werden. Dann drücke ▶ Abspielen!</span></div>
-
+ 
             <div class="melody-tab-selector">
                 <button class="melody-tab-btn active" data-tab="standard" onclick="setMelodyTab('standard')">📋 Muster</button>
                 <button class="melody-tab-btn" data-tab="random" onclick="setMelodyTab('random')">🎲 Zufällig</button>
             </div>
-
+ 
             <div id="randomOptions" style="display:none;">
                 <div class="lage-selector">
                     <span class="lage-label">Lage:</span>
-                    <button class="lage-btn active" data-lage="random" onclick="setRandomLage('random')">Zufällig</button>
-                    <button class="lage-btn" data-lage="1" onclick="setRandomLage(1)">1</button>
+                    <button class="lage-btn active" data-lage="1" onclick="setRandomLage(1)">1</button>
                     <button class="lage-btn" data-lage="2" onclick="setRandomLage(2)">2</button>
                     <button class="lage-btn" data-lage="3" onclick="setRandomLage(3)">3</button>
                     <button class="lage-btn" data-lage="4" onclick="setRandomLage(4)">4</button>
@@ -497,33 +507,29 @@
                     </span>
                 </div>
             </div>
-
+ 
             <div id="melodyContent">
                 <div class="melody-options">
                     <button class="generate-btn" onclick="regenerateMelody()">🎲 Neue Muster</button>
                 </div>
                 <div class="table-wrapper"><table class="melody-table" id="melodyTable"></table></div>
             </div>
-
+ 
             <div id="melodyStagesDisplay"></div>
             <div id="pianoRollArea"></div>
-
+ 
             <!-- KEYBOARD MAPPING -->
             <div id="keyboardMappingArea" style="display:none;">
                 <div class="keyboard-mapping-module">
                     <div class="km-header">
-                        <h3>Tastatur-Belegung</h3>
+                        <h3>Tastatur-Belegung <span class="pr-info-badge" onclick="showKeyboardHelp()" title="Hilfe">ℹ</span></h3>
                         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                            <button class="piano-roll-btn" id="kmPlayBtn" onclick="kmPlay()">▶ Abspielen</button>
-                            <button class="piano-roll-btn pause-btn" id="kmPauseBtn" onclick="kmPause()" disabled>⏸ Pause</button>
-                            <button class="piano-roll-btn stop-btn" id="kmStopBtn" onclick="kmStop()" disabled>⏹ Stopp</button>
                             <button class="piano-roll-btn practice-btn" id="practiceToggle" onclick="togglePracticeMode()">🎓 Übungsmodus</button>
+                            <button class="piano-roll-btn" id="showKeysToggle" onclick="toggleShowKeys()" style="background:#607D8B;border-color:#607D8B;">⌨ Tasten anzeigen</button>
                             <button class="piano-roll-btn" id="kmLoopBtn" onclick="toggleKmLoop()" style="background:#9C27B0;border-color:#9C27B0;">🔁 Schleife</button>
                             <button class="km-reset-btn" onclick="resetKeyboardMapping()">↺ Zurücksetzen</button>
                         </div>
                     </div>
-                    <div class="km-hint">Tasten frei belegbar – klicke auf eine Taste in der Tabelle zum Ändern. Alle Finger einer Hand können auch auf dieselbe Taste gelegt werden.</div>
-                    <div class="km-hint" style="margin-top:-6px;">Schleife: Aktiviere 🔁, dann klicke zweimal auf den Zeitleisten-Balken rechts (1× Start, 2× Ende). Der markierte Bereich wird beim Abspielen wiederholt.</div>
                     <div class="km-tables">
                         <div class="km-section">
                             <h4>Linke Hand – Grundtöne</h4>
@@ -539,7 +545,7 @@
             </div>
         </div>
     </div>
-
+ 
     <script>
     // =====================================================================
     //  TRANSLATIONS
@@ -570,7 +576,7 @@
             hintStep4:'Pick a pattern – it determines which notes are played. Then press ▶ Play!'
         }
     };
-
+ 
     // =====================================================================
     //  CONFIG & STATE
     // =====================================================================
@@ -581,23 +587,23 @@
         degreeFunctions: { major:['tonic','subdominant','tonic','subdominant','dominant','tonic','dominant'], minor:['tonic','subdominant','tonic','subdominant','dominant','tonic','dominant'] },
         baseWhiteWidth: 45
     };
-
+ 
     const FIXED_WHITE_KEYS = 20;
     const romanNumerals = ['I','II','III','IV','V','VI','VII'];
     const toneToMidi = { C:60, CIS:61, D:62, DIS:63, E:64, F:65, FIS:66, G:67, GIS:68, A:69, AIS:70, H:71 };
     const toneFrequencies = { C:261.63, CIS:277.18, D:293.66, DIS:311.13, E:329.63, F:349.23, FIS:369.99, G:392.00, GIS:415.30, A:440.00, AIS:466.16, H:493.88 };
-
+ 
     const state = {
         language:'de', currentTone:null, currentScaleType:'major', currentScaleTones:[],
         selectedProgression:[], guidedStep:1,
         melodyTab:'standard', // 'standard' or 'random'
         melodyRows:[], melodyTones:[], melodyColumnOrder:[0,1,2,3,4],
         selectedMelodyRow:null, summaryStages:[],
-        randomToneCount:3, randomColumnOrders:[], randomLage:'random'
+        randomToneCount:3, randomColumnOrders:[], randomLage:1
     };
-
+ 
     let pieceGeneratorData = { active:false, sections:null, melodyPattern:null, anchors:null };
-
+ 
     // =====================================================================
     //  UTILITIES
     // =====================================================================
@@ -606,7 +612,7 @@
     function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     function debounce(fn, wait) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), wait); }; }
     function getFrequency(tone, octave) { return (toneFrequencies[tone]||261.63) * Math.pow(2, octave-4); }
-
+ 
     // Bestimmt die korrekte Oktave basierend auf der Position relativ zu C4
     // C4 = erstes C rechts der linken-Hand-Grenze
     function getOctaveFromPosition(keyLeft, cPositions, lhb) {
@@ -629,7 +635,7 @@
         if (whiteCount*ww > maxW) ww = Math.max(12, Math.floor(maxW/whiteCount));
         return ww;
     }
-
+ 
     // =====================================================================
     //  PIANO GENERATION
     // =====================================================================
@@ -639,7 +645,7 @@
         for(let i=0;i<totalKeys;i++){const ti=((si+i)%12+12)%12,t=CONFIG.allTones[ti];k.push({tone:t,octave:Math.floor((si+i+120)/12)-10,idx:i,isWhite:CONFIG.whiteTones.includes(t)});}
         return k;
     }
-
+ 
     function createPiano(container, totalKeys, options={}) {
         const opts = { selectable:false, onSelect:null, markScale:false, scaleTones:[], showLabels:true, startTone:'C', ...options };
         if (typeof container==='string') container=document.getElementById(container);
@@ -689,7 +695,7 @@
         }
         return { ww, wh, bw, bh, labelSize, totalWidth:whiteCount*ww+leftOffset };
     }
-
+ 
     function generateKeysForWhiteCount(whiteCount, startTone='C', preSteps=0) {
         const keys=[], si=CONFIG.allTones.indexOf(startTone);
         let wc=0, pos=-preSteps;
@@ -700,7 +706,7 @@
         }
         return keys;
     }
-
+ 
     function createPianoWithWhiteKeys(container, whiteCount, options={}) {
         const opts={markScale:false,scaleTones:[],showLabels:true,startTone:'C',preSteps:0,...options};
         if(typeof container==='string')container=document.getElementById(container);
@@ -743,7 +749,7 @@
         }
         return {ww,wh,bw,bh,labelSize,totalWidth:whiteCount*ww+leftOffset,whiteCount,leftOffset};
     }
-
+ 
     function applyHandClasses(piano, whiteKeyWidth, leftHandWhiteKeys, leftOffset) {
         const boundary = (leftOffset||0) + whiteKeyWidth*leftHandWhiteKeys;
         piano.querySelectorAll('.white-key,.black-key').forEach(key=>{
@@ -751,7 +757,7 @@
             key.classList.add(kc<=boundary?'left-octave':'right-octave');
         });
     }
-
+ 
     // =====================================================================
     //  CORE FUNCTIONS
     // =====================================================================
@@ -785,7 +791,7 @@
         pieceGeneratorData={active:false,sections:null,melodyPattern:null,anchors:null};
         document.querySelectorAll('.melody-tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab==='standard'));
         document.getElementById('randomOptions').style.display='none';
-        document.querySelectorAll('.lage-btn').forEach(b=>b.classList.toggle('active',b.dataset.lage==='random'));
+        document.querySelectorAll('.lage-btn').forEach(b=>b.classList.toggle('active',b.dataset.lage==='1'));
         document.querySelectorAll('.tone-count-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.count)===3));
         updateAllDisplays();
         updateGuidedState();
@@ -832,7 +838,7 @@
             }
         });
     }
-
+ 
     // =====================================================================
     //  PROGRESSION
     // =====================================================================
@@ -872,32 +878,27 @@
         updatePianoRoll();
         updateModuleVisibility();
     }
-
+ 
     // =====================================================================
     //  MELODY GENERATOR
     // =====================================================================
     function setMelodyTab(tab) {
         if(isPlaying)stopPlayback();
         state.melodyTab=tab;
-        state.selectedMelodyRow=null;
-        pieceGeneratorData.active=false;
         document.querySelectorAll('.melody-tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
         document.getElementById('randomOptions').style.display=tab==='random'?'':'none';
+        state.selectedMelodyRow=null;
+        pieceGeneratorData.active=false;
         state.melodyRows=[];
         generateMelodyTable(true);
-        const ms=document.getElementById('melodyStagesDisplay'); if(ms)ms.innerHTML='';
-        document.getElementById('pianoRollArea').innerHTML='';
     }
     function setRandomLage(lage) {
         if(isPlaying)stopPlayback();
         state.randomLage=lage;
         document.querySelectorAll('.lage-btn').forEach(b=>b.classList.toggle('active',String(b.dataset.lage)===String(lage)));
-        // Tabelle neu generieren mit neuer Lage
         state.melodyRows=[];
-        const hadSelection=state.selectedMelodyRow;
         state.selectedMelodyRow=null;
         generateMelodyTable(true);
-        if(hadSelection!==null&&state.melodyRows.length>0) selectMelodyRow(Math.min(hadSelection,state.melodyRows.length-1));
     }
     function setRandomToneCount(count) {
         const oldCount=state.randomToneCount;
@@ -906,11 +907,9 @@
         if(state.melodyRows.length>0&&state.randomColumnOrders.length>0){
             if(count>oldCount){
                 // Spalten ergänzen
-                let lage=state.randomLage;
                 state.melodyRows.forEach((row,i)=>{
                     const order=state.randomColumnOrders[i];
-                    let lg=lage==='random'?Math.floor(Math.random()*5)+1:lage;
-                    const range=getLageRange(lg);
+                    const range=getLageRange(state.randomLage);
                     for(let j=row.length;j<count;j++){
                         let pick;let att=0;
                         do{pick=range[Math.floor(Math.random()*range.length)];att++;}while(order.filter(o=>o===pick).length>=2&&att<20);
@@ -928,13 +927,11 @@
     }
     function regenerateMelody() {
         state.melodyRows=[];
-        const hadSelection=state.selectedMelodyRow;
         state.selectedMelodyRow=null;
         pieceGeneratorData.active=false;
         generateMelodyTable(true);
-        if(hadSelection!==null&&state.melodyRows.length>0) selectMelodyRow(0);
     }
-
+ 
     // Lage 1: Daumen auf Terz → [0,1,2,3,4]
     // Lage 2: Zeigefinger auf Terz → [-1,0,1,2,3]
     // Lage 3: Mittelfinger auf Terz → [-2,-1,0,1,2]
@@ -946,7 +943,7 @@
         for(let i=0;i<5;i++) range.push(i-offset);
         return range;
     }
-
+ 
     function generateMelodyTable(forceNew) {
         if(!state.currentTone||!state.selectedProgression.length)return;
         if(isPlaying)stopPlayback();
@@ -954,10 +951,10 @@
         table.innerHTML='';
         const previousRow=state.selectedMelodyRow;
         state.selectedMelodyRow=null;
-
+ 
         const firstDeg=state.selectedProgression[0];
         const terzIdx=(firstDeg+2)%7;
-
+ 
         if(state.melodyTab==='standard') {
             const colCount=5;
             state.melodyColumnOrder=[0,1,2,3,4];
@@ -984,10 +981,7 @@
                 state.melodyRows=[];
                 state.randomColumnOrders=[];
                 for(let i=0;i<10;i++){
-                    // Lage bestimmen
-                    let lage=state.randomLage;
-                    if(lage==='random') lage=Math.floor(Math.random()*5)+1;
-                    const range=getLageRange(lage);
+                    const range=getLageRange(state.randomLage);
                     // Erster Ton = Terz (offset 0), Rest = zufällig aus Range (max 2 gleiche)
                     const order=[0];
                     for(let j=1;j<colCount;j++){
@@ -1003,14 +997,17 @@
                     state.melodyRows.push(new Array(colCount).fill(1));
                 }
             }
-            const displayOrder=state.randomColumnOrders[0]||[0];
-            state.melodyColumnOrder=displayOrder;
-            buildRandomTableHTML(table, terzIdx, colCount);
+            state.melodyColumnOrder=state.randomColumnOrders[0]||[0];
+            // melodyTones für erste Zeile setzen
+            const scaleTones=state.currentScaleTones||[];
+            state.melodyTones=state.melodyColumnOrder.map(ci=>scaleTones[((terzIdx+ci)%7+7)%7]||'');
+            buildRandomTableHTML(table, terzIdx, colCount, scaleTones);
         }
-
+ 
         if(previousRow!==null&&previousRow<state.melodyRows.length) selectMelodyRow(previousRow);
+        else if(state.melodyRows.length>0&&state.selectedMelodyRow===null) selectMelodyRow(0);
     }
-
+ 
     function buildMelodyTableHTML(table, tones, rows) {
         const thead=document.createElement('thead'), hr=document.createElement('tr');
         hr.innerHTML='<th class="possibility-col"></th>';
@@ -1026,28 +1023,30 @@
         });
         table.appendChild(tbody);
     }
-
-    function buildRandomTableHTML(table, terzIdx, colCount) {
+ 
+    function buildRandomTableHTML(table, terzIdx, colCount, scaleTones) {
         const fingerNames=state.language==='de'?['D','Z','M','R','K']:['T','I','M','R','P'];
         const thead=document.createElement('thead'), hr=document.createElement('tr');
         hr.innerHTML='<th class="possibility-col"></th>';
         for(let j=0;j<colCount;j++) hr.innerHTML+=`<th>Ton ${j+1}</th>`;
         thead.appendChild(hr); table.appendChild(thead);
         const tbody=document.createElement('tbody');
+        const st=scaleTones||state.currentScaleTones||[];
         state.melodyRows.forEach((row,i)=>{
             const order=state.randomColumnOrders[i];
+            if(!order)return;
             const tr=document.createElement('tr'); tr.dataset.rowIndex=i;
             tr.onclick=()=>selectMelodyRow(i);
             tr.innerHTML=`<td class="possibility-col">${i+1}</td>`;
             order.forEach(ci=>{
-                const tone=state.currentScaleTones[((terzIdx+ci)%7+7)%7];
+                const tone=st[((terzIdx+ci)%7+7)%7]||'–';
                 tr.innerHTML+=`<td class="one">${tone}</td>`;
             });
             tbody.appendChild(tr);
         });
         table.appendChild(tbody);
     }
-
+ 
     function selectMelodyRow(idx) {
         if(isPlaying)stopPlayback();
         state.selectedMelodyRow=idx;
@@ -1063,14 +1062,14 @@
         updateModuleVisibility();
         advanceGuidedStep(5);
     }
-
+ 
     function getCurrentMelodyPattern() {
         if(state.selectedMelodyRow!==null&&state.melodyRows[state.selectedMelodyRow]){
             return state.melodyRows[state.selectedMelodyRow];
         }
         return null;
     }
-
+ 
     function showLageHelp(){
         const ex=document.querySelector('.pr-help-overlay');if(ex){ex.remove();return;}
         const o=document.createElement('div');o.className='pr-help-overlay';o.onclick=e=>{if(e.target===o)o.remove();};
@@ -1082,11 +1081,10 @@
         <div class="pr-help-section"><strong>Lage 3</strong><p>Mittelfinger auf der Terz – 2 Finger darunter, 2 darüber.</p></div>
         <div class="pr-help-section"><strong>Lage 4</strong><p>Ringfinger auf der Terz – 3 Finger darunter.</p></div>
         <div class="pr-help-section"><strong>Lage 5</strong><p>Kleiner Finger auf der Terz – die restlichen 4 Finger liegen darunter (tiefere Töne).</p></div>
-        <div class="pr-help-section"><strong>Zufällig</strong><p>Jede Zeile bekommt eine zufällige Lage.</p></div>
         </div>`;
         document.body.appendChild(o);
     }
-
+ 
     function showMainHelp(){
         const ex=document.querySelector('.pr-help-overlay');if(ex){ex.remove();return;}
         const o=document.createElement('div');o.className='pr-help-overlay';o.onclick=e=>{if(e.target===o)o.remove();};
@@ -1103,7 +1101,20 @@
         </div>`;
         document.body.appendChild(o);
     }
-
+ 
+    function showKeyboardHelp(){
+        const ex=document.querySelector('.pr-help-overlay');if(ex){ex.remove();return;}
+        const o=document.createElement('div');o.className='pr-help-overlay';o.onclick=e=>{if(e.target===o)o.remove();};
+        o.innerHTML=`<div class="pr-help-box" style="max-width:550px;"><button class="pr-help-close" onclick="this.closest('.pr-help-overlay').remove()">✕</button>
+        <h3>Tastatur-Belegung – Hilfe</h3>
+        <div class="pr-help-section"><strong>Tasten frei belegen</strong><p>Klicke auf eine Taste in der Tabelle und drücke dann die gewünschte neue Taste. Alle Finger einer Hand können auch auf dieselbe Taste gelegt werden – so kannst du alles mit nur zwei Tasten spielen.</p></div>
+        <div class="pr-help-section"><strong>Tasten anzeigen</strong><p>Zeigt die Tastatur-Belegung direkt auf den Klavier-Tasten im Piano Roll an. Linke Hand in blau, rechte Hand in rot.</p></div>
+        <div class="pr-help-section"><strong>Übungsmodus</strong><p>Beim Abspielen wird kein Ton automatisch erzeugt. Das Piano Roll stoppt bei jeder Note und wartet, bis du die richtige Taste drückst. Erst dann geht es weiter.</p></div>
+        <div class="pr-help-section"><strong>Schleife</strong><p>Aktiviere 🔁, dann klicke zweimal auf den Zeitleisten-Balken rechts: einmal für den Start (grüner Marker) und einmal für das Ende (roter Marker). Der markierte Bereich wird beim Abspielen automatisch wiederholt.</p></div>
+        </div>`;
+        document.body.appendChild(o);
+    }
+ 
     // =====================================================================
     //  MELODY PIANO DISPLAY
     // =====================================================================
@@ -1129,14 +1140,14 @@
         }
         updatePianoRoll();
     }
-
+ 
     function createMelodyPianoForStage(container, deg, row, stepIdx, prevTerzLeft) {
         const root=state.currentScaleTones[deg];
         const terzIdx=(deg+2)%7;
         const funcs=CONFIG.degreeFunctions[state.currentScaleType];
         const funcClass=funcs[deg];
         const colOrder=state.melodyColumnOrder;
-
+ 
         // Die Melodie-Töne für DIESE Stufe berechnen
         const melodyTones=[];
         row.forEach((val,colIdx)=>{
@@ -1146,20 +1157,20 @@
                 melodyTones.push({tone:state.currentScaleTones[toneIdx],order:melodyTones.length+1,colIdx});
             }
         });
-
+ 
         const section=document.createElement('div');
         section.className=`melody-piano-section ${funcClass}-section`;
         const header=document.createElement('div'); header.className='melody-piano-header';
         header.innerHTML=`<div class="header-spacer"></div><h3>${t('degree')} ${romanNumerals[deg]} (${root})</h3>
             <button class="play-stage-btn" onclick="playStage(${stepIdx})">▶ Abspielen</button>`;
         section.appendChild(header);
-
+ 
         const hands=document.createElement('div'); hands.className='melody-piano-hands';
         const rightNames=melodyTones.map(t=>t.tone).join(', ')||'-';
         hands.innerHTML=`<div class="hand-info left-info-box">${t('leftHand')}: ${root}</div>
             <div class="hand-info right-info-box">${t('rightHand')}: ${rightNames}</div>`;
         section.appendChild(hands);
-
+ 
         // Finger-Positionierung
         const fingerNames=state.language==='de'?['Daumen','Zeigefinger','Mittelfinger','Ringfinger','Kleiner Finger']:['Thumb','Index','Middle','Ring','Pinky'];
         // Linke Hand: welcher Finger spielt den Root?
@@ -1168,9 +1179,8 @@
         const leftFingerName=stepsDown<=4?fingerNames[stepsDown]:fingerNames[0];
         // Rechte Hand
         let rightFingers;
-        if(state.melodyTab==='random'&&state.randomLage!=='random'){
-            const lage=typeof state.randomLage==='number'?state.randomLage:parseInt(state.randomLage);
-            const range=getLageRange(lage);
+        if(state.melodyTab==='random'){
+            const range=getLageRange(state.randomLage);
             const seen=new Set();
             const assignments=[];
             melodyTones.forEach(mt=>{
@@ -1189,15 +1199,15 @@
         const fh=document.createElement('div'); fh.className='finger-hint';
         fh.innerHTML=`<span class="fh-left">Linke Hand: ${leftFingerName} → ${root}</span><span class="fh-right">Rechte Hand: ${rightFingers}</span>`;
         section.appendChild(fh);
-
+ 
         const pw=document.createElement('div'); pw.className='piano-wrapper';
         const piano=document.createElement('div'); piano.className='piano melody-piano-extended';
         pw.appendChild(piano); section.appendChild(pw); container.appendChild(section);
-
-        const whiteKeys=FIXED_WHITE_KEYS+7, preSteps=12, leftHandKeys=14;
-        const dims=createPianoWithWhiteKeys(piano,whiteKeys,{startTone:state.currentTone,markScale:true,scaleTones:state.currentScaleTones,preSteps});
+ 
+        const whiteKeys=FIXED_WHITE_KEYS+7, leftHandKeys=14;
+        const dims=createPianoWithWhiteKeys(piano,whiteKeys,{startTone:'C',markScale:true,scaleTones:state.currentScaleTones});
         applyHandClasses(piano,dims.ww,leftHandKeys,dims.leftOffset);
-
+ 
         const numSize=Math.max(16,Math.round(dims.ww*0.45));
         const numTop=Math.round(dims.bh)+5;
         const leftHandBoundary=(dims.leftOffset||0)+dims.ww*leftHandKeys;
@@ -1205,18 +1215,18 @@
         const cKeysForOctave=allKeys.filter(k=>k.dataset.tone==='C').map(k=>({left:parseFloat(k.style.left),style:k.style}));
         const usedPositions=new Map();
         const stagePlayData={notes:[],pianoEl:piano};
-
+ 
         // LINKE HAND: Grundton
         let rootKey;
         if(root===state.currentTone){
-            rootKey=[...allKeys].reverse().find(k=>k.dataset.tone===root&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary);
+            rootKey=[...allKeys].reverse().find(k=>k.dataset.tone===root&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary-dims.ww*0.5);
         } else if(deg<=2){
-            const startKey=[...allKeys].reverse().find(k=>k.dataset.tone===state.currentTone&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary);
+            const startKey=[...allKeys].reverse().find(k=>k.dataset.tone===state.currentTone&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary-dims.ww*0.5);
             const startPos=startKey?parseFloat(startKey.style.left):leftHandBoundary;
-            const candidates=allKeys.filter(k=>k.dataset.tone===root&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary);
+            const candidates=allKeys.filter(k=>k.dataset.tone===root&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary-dims.ww*0.5);
             if(candidates.length) rootKey=candidates.reduce((best,k)=>Math.abs(parseFloat(k.style.left)-startPos)<Math.abs(parseFloat(best.style.left)-startPos)?k:best);
         } else {
-            rootKey=allKeys.find(k=>k.dataset.tone===root&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary);
+            rootKey=allKeys.find(k=>k.dataset.tone===root&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary-dims.ww*0.5);
         }
         if(rootKey){
             const isRootBlack=rootKey.classList.contains('black-key');
@@ -1225,7 +1235,7 @@
             addColoredNumber(piano,rootKey,1,funcClass,numSize,rootTop);
             stagePlayData.notes.push({tone:root,keyEl:rootKey,octave:rootOct,simultaneous:false,isRoot:true});
         }
-
+ 
         // RECHTE HAND: Töne positionieren, Duplikate stapeln
         let referenceLeft;
         if(prevTerzLeft!==undefined&&prevTerzLeft!==null){
@@ -1233,13 +1243,13 @@
         } else {
             referenceLeft=leftHandBoundary;
         }
-
+ 
         // 1. Einzigartige Offsets sammeln
         const uniqueToneOffsets=[...new Set(melodyTones.map(mt=>{
             const ci=state.melodyColumnOrder[mt.colIdx]!==undefined?state.melodyColumnOrder[mt.colIdx]:mt.colIdx;
             return ci;
         }))].sort((a,b)=>a-b);
-
+ 
         // 2. Positionen finden: erster Ton nächstliegend zur Referenz, Rest aufsteigend
         const toneKeyMap=new Map();
         let searchLeft;
@@ -1249,7 +1259,7 @@
             const tone=state.currentScaleTones[toneIdx];
             let targetKey;
             if(i===0){
-                // Erster Ton: nächstliegend zur Referenz (gesamte Tastatur)
+                // Erster Ton: nächstliegend zur Referenz (gesamte Tastatur, links ODER rechts)
                 const candidates=allKeys.filter(k=>k.dataset.tone===tone);
                 if(candidates.length) targetKey=candidates.reduce((best,k)=>Math.abs(parseFloat(k.style.left)-referenceLeft)<Math.abs(parseFloat(best.style.left)-referenceLeft)?k:best);
                 searchLeft=targetKey?parseFloat(targetKey.style.left):-Infinity;
@@ -1260,7 +1270,7 @@
             }
             if(targetKey) toneKeyMap.set(ci, targetKey);
         });
-
+ 
         // 3. Overflow-Schutz: wenn letzter Ton über Tastatur hinausgeht, alles eine Oktave tiefer
         const lastOffset=uniqueToneOffsets[uniqueToneOffsets.length-1];
         const lastKey=toneKeyMap.get(lastOffset);
@@ -1283,7 +1293,7 @@
                 if(targetKey) toneKeyMap.set(ci, targetKey);
             });
         }
-
+ 
         // 4. Kreise zeichnen + Playback-Daten
         let thisTerzLeft=referenceLeft;
         melodyTones.forEach(({tone,order,colIdx},idx)=>{
@@ -1301,11 +1311,11 @@
             usedPositions.set(keyLeft,useCount+1);
             stagePlayData.notes.push({tone,keyEl:targetKey,octave:getOctaveFromPosition(keyLeft,cKeysForOctave,leftHandBoundary),simultaneous:idx===0,isRoot:false});
         });
-
+ 
         state.summaryStages.push(stagePlayData);
         return thisTerzLeft;
     }
-
+ 
     function addColoredNumber(piano,key,num,funcClass,size,top) {
         const m=document.createElement('div');
         m.className=`tone-number num-${funcClass}`;
@@ -1313,26 +1323,28 @@
         m.style.cssText=`width:${size}px;height:${size}px;font-size:${Math.round(size*0.55)}px;top:${top}px;left:${parseFloat(key.style.left)+parseFloat(key.style.width)/2-size/2}px;`;
         piano.appendChild(m);
     }
-
+ 
     // =====================================================================
     //  AUDIO SYSTEM
     // =====================================================================
     let audioCtx=null, reverbNode=null, isPlaying=false, isPaused=false, shouldStop=false, isLooping=false, activeAudioNodes=[];
     const isMobile=/Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent)||(window.innerWidth<768&&'ontouchstart' in window);
     const MAX_POLYPHONY=isMobile?10:50;
-    let audioSettings={volume:0.7,tempo:600,reverb:0.3};
-
+    let audioSettings={volume:0.7,tempo:600,reverb:0.3,sustain:true};
+ 
     function updateVolume(v){audioSettings.volume=v/100;document.querySelectorAll('.audio-vol-display').forEach(e=>e.textContent=v+'%');document.querySelectorAll('.audio-vol-slider').forEach(s=>{if(s.value!=v)s.value=v;});}
-    function updateTempo(v){audioSettings.tempo=parseInt(v);document.querySelectorAll('.audio-tempo-display').forEach(e=>e.textContent=v+'ms');document.querySelectorAll('.audio-tempo-slider').forEach(s=>{if(s.value!=v)s.value=v;});pianoRollData.beatHeight=pianoRollData.baseBeatHeight*(audioSettings.tempo/pianoRollData.baseTempo);const c=document.getElementById('pianoRollNotes');if(c&&pianoRollNotes.length){renderPianoRollNotes();renderPianoRollTimeline();}}
+    function updateTempo(v){audioSettings.tempo=parseInt(v);document.querySelectorAll('.audio-tempo-display').forEach(e=>e.textContent=v+'ms');document.querySelectorAll('.audio-tempo-slider').forEach(s=>{if(s.value!=v)s.value=v;});pianoRollData.beatHeight=pianoRollData.baseBeatHeight*(audioSettings.tempo/pianoRollData.baseTempo);const c=document.getElementById('pianoRollNotes');if(c&&pianoRollNotes.length){renderPianoRollNotes();renderPianoRollTimeline();renderKeyLabels();}}
     function updateReverb(v){audioSettings.reverb=v/100;document.querySelectorAll('.audio-reverb-display').forEach(e=>e.textContent=v+'%');document.querySelectorAll('.audio-reverb-slider').forEach(s=>{if(s.value!=v)s.value=v;});}
-
+    function toggleSustain(on){audioSettings.sustain=!!on;document.querySelectorAll('.audio-sustain-toggle').forEach(cb=>{cb.checked=audioSettings.sustain;});}
+ 
     function buildAudioControlsHTML() {
         const vol=Math.round(audioSettings.volume*100),tempo=audioSettings.tempo,reverb=Math.round(audioSettings.reverb*100);
         return `<div class="audio-control"><label>🔊 Lautstärke:</label><input type="range" class="audio-vol-slider" min="0" max="100" value="${vol}" oninput="updateVolume(this.value)"><span class="value audio-vol-display">${vol}%</span></div>
         <div class="audio-control"><label>⏱️ Tempo:</label><input type="range" class="audio-tempo-slider" min="200" max="1000" value="${tempo}" oninput="updateTempo(this.value)"><span class="value audio-tempo-display">${tempo}ms</span></div>
-        <div class="audio-control"><label>🎵 Hall:</label><input type="range" class="audio-reverb-slider" min="0" max="100" value="${reverb}" oninput="updateReverb(this.value)"><span class="value audio-reverb-display">${reverb}%</span></div>`;
+        <div class="audio-control"><label>🎵 Hall:</label><input type="range" class="audio-reverb-slider" min="0" max="100" value="${reverb}" oninput="updateReverb(this.value)"><span class="value audio-reverb-display">${reverb}%</span></div>
+        <div class="audio-control"><label>🎹 Sustain:</label><input type="checkbox" class="audio-sustain-toggle" ${audioSettings.sustain?'checked':''} onchange="toggleSustain(this.checked)"></div>`;
     }
-
+ 
     function initAudio(){
         if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)(isMobile?{latencyHint:'playback'}:{latencyHint:'interactive'});if(!isMobile)createReverbNode();}
         if(audioCtx.state==='suspended')audioCtx.resume();
@@ -1351,29 +1363,29 @@
         reverbNode=audioCtx.createConvolver();reverbNode.buffer=impulse;
     }
     function stopAllSounds(){activeAudioNodes.forEach(n=>{try{if(n.stop)n.stop();if(n.disconnect)n.disconnect();}catch(e){}});activeAudioNodes=[];document.querySelectorAll('.playing,.held').forEach(el=>el.classList.remove('playing','held'));}
-
+ 
     function playPianoTone(frequency, duration=1.0, dynVol=1.0) {
         initAudio();
         if(activeAudioNodes.length>MAX_POLYPHONY){const old=activeAudioNodes.splice(0,5);old.forEach(n=>{try{n.stop();n.disconnect();}catch(e){}});}
         const sr=audioCtx.sampleRate, now=audioCtx.currentTime;
-        const vol=audioSettings.volume*0.6, reverbAmt=audioSettings.reverb;
+        const vol=audioSettings.volume*0.85, reverbAmt=audioSettings.reverb;
         const allNodes=[];
-
+ 
         // Inharmonizitäts-Koeffizient (Saitensteifigkeit)
         const B = frequency<200?0.00012 : frequency<400?0.00008 : frequency<600?0.00005 : 0.00003;
-
+ 
         // Mobile vs Desktop: Komplexität skalieren
         const numHarmonics = isMobile ? 6 : (frequency<300?12 : frequency<500?10 : 8);
         const numStrings = isMobile ? 1 : (frequency<200?2 : frequency<500?3 : 2);
         const detuneAmount = frequency<200?2.0 : frequency<500?1.5 : 1.0;
-
+ 
         // Harmonische Amplituden
         const harmonicAmps=[];
         for(let h=0;h<numHarmonics;h++){
             const n=h+1;
             harmonicAmps.push(Math.pow(n,-0.7)*Math.exp(-0.15*h)*(h===0?1.0:h===1?0.6:h===2?0.4:1.0));
         }
-
+ 
         // Decay-Zeiten (frequenzabhängig: tiefe Töne hallen länger)
         const totalDecay = frequency<200?6 : frequency<400?4.5 : frequency<600?3.5 : 2.5;
         const maxDecay = totalDecay;
@@ -1381,7 +1393,7 @@
         for(let h=0;h<numHarmonics;h++){
             decayTimes.push(totalDecay*Math.exp(-0.2*h)*0.8+totalDecay*0.2);
         }
-
+ 
         // === FILTER-KETTE (Soundboard-Resonanz) ===
         // Mobile: vereinfacht (2 Filter), Desktop: voll (4 Filter)
         let firstFilter;
@@ -1407,24 +1419,24 @@
             firstFilter=bodyFilter; allNodes.push(bodyFilter,bodyFilter2,airFilter,warmthFilter);
             var lastFilter=warmthFilter;
         }
-
+ 
         // Master-Gain
         const masterGain=audioCtx.createGain();
         masterGain.gain.setValueAtTime(0.001,now);
         lastFilter.connect(masterGain);
-
+ 
         // Soft-Limiter
         const limiter=audioCtx.createWaveShaper();
         const curve=new Float32Array(4096);
         for(let i=0;i<4096;i++){const x=(i/2048)-1; curve[i]=Math.tanh(x*0.7);}
         limiter.curve=curve; limiter.oversample=isMobile?'none':'2x';
         masterGain.connect(limiter);
-
+ 
         // Dynamik-Gain
         const dynamicsGain=audioCtx.createGain();
         dynamicsGain.gain.value=dynVol;
         limiter.connect(dynamicsGain);
-
+ 
         // Dry/Wet Reverb (Desktop only)
         if(reverbNode){
             const dryG=audioCtx.createGain(), wetG=audioCtx.createGain();
@@ -1436,7 +1448,7 @@
             dynamicsGain.connect(audioCtx.destination);
             allNodes.push(masterGain,limiter,dynamicsGain);
         }
-
+ 
         // === MULTI-STRING OSZILLATOREN ===
         for(let s=0;s<numStrings;s++){
             const sd=numStrings===1?0:(s-(numStrings-1)/2)*detuneAmount;
@@ -1447,14 +1459,14 @@
                 pf*=Math.pow(2,sd/1200);
                 pf*=Math.pow(2,(Math.random()-0.5)*0.6/1200);
                 if(pf>=sr/2-100)continue;
-
+ 
                 const osc=audioCtx.createOscillator(); osc.type='sine'; osc.frequency.value=pf;
                 const og=audioCtx.createGain();
                 const fs=frequency<250?0.17:frequency<400?0.15:frequency<600?0.12:0.10;
                 const amp=harmonicAmps[h]*vol*sa*(fs/numStrings), decay=decayTimes[h];
-                const ba=frequency<250?0.008:frequency<400?0.010:0.015, at=ba+h*0.001, ae=now+at;
+                const ba=frequency<250?0.010:frequency<400?0.012:0.018, at=ba+h*0.002, ae=now+at;
                 og.gain.setValueAtTime(0.0001,now);
-                og.gain.linearRampToValueAtTime(amp*0.5,now+at*0.4);
+                og.gain.linearRampToValueAtTime(amp*0.3,now+at*0.3);
                 og.gain.linearRampToValueAtTime(amp,ae);
                 og.gain.exponentialRampToValueAtTime(Math.max(amp*0.85,0.0001),ae+0.10+h*0.004);
                 og.gain.exponentialRampToValueAtTime(0.0001,now+decay);
@@ -1463,7 +1475,7 @@
                 allNodes.push(osc,og);
             }
         }
-
+ 
         // === HAMMER-GERÄUSCH ===
         const hLen=Math.round(sr*0.04), hBuf=audioCtx.createBuffer(1,hLen,sr), hData=hBuf.getChannelData(0);
         for(let i=0;i<hLen;i++) hData[i]=(Math.random()*2-1)*Math.exp(-(i/sr)/0.004);
@@ -1471,12 +1483,12 @@
         const hF=audioCtx.createBiquadFilter(); hF.type='bandpass';
         hF.frequency.value=Math.min(Math.max(frequency*1.5,400),2000); hF.Q.value=0.6;
         const hG=audioCtx.createGain();
-        hG.gain.setValueAtTime(vol*(frequency<250?0.02:frequency<400?0.010:frequency<600?0.005:0.002),now);
+        hG.gain.setValueAtTime(vol*(frequency<250?0.015:frequency<400?0.008:frequency<600?0.003:0.001),now);
         hG.gain.exponentialRampToValueAtTime(0.0001,now+0.025);
         hSrc.connect(hF); hF.connect(hG); hG.connect(firstFilter);
         hSrc.start(now); hSrc.stop(now+0.04);
         allNodes.push(hSrc,hF,hG);
-
+ 
         // === DUPLEX-SCALING (Desktop only) ===
         // Sympathische Obertöne von den oberen Saiten
         if(!isMobile && frequency<800 && frequency*2<sr/2){
@@ -1494,7 +1506,7 @@
                 allNodes.push(dosc,dg);
             });
         }
-
+ 
         // === RELEASE-RESONANZ (Desktop only) ===
         // Subtile Nachschwingung nach dem Loslassen
         if(!isMobile && frequency<500){
@@ -1507,12 +1519,12 @@
             relOsc.start(now); relOsc.stop(now+totalDecay+0.6);
             allNodes.push(relOsc,relGain);
         }
-
+ 
         // === MASTER-HÜLLKURVE ===
         const mAt=frequency<250?0.008:frequency<400?0.012:0.018;
         masterGain.gain.linearRampToValueAtTime(1.0,now+mAt);
         masterGain.gain.setTargetAtTime(0.0001,now+maxDecay*0.9,maxDecay*0.15);
-
+ 
         // === TRACKING ===
         const nodeEntry={
             stop:()=>{try{const t=audioCtx.currentTime;masterGain.gain.cancelScheduledValues(t);masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value,0.0001),t);masterGain.gain.exponentialRampToValueAtTime(0.0001,t+0.05);}catch(e){}},
@@ -1521,9 +1533,9 @@
         activeAudioNodes.push(nodeEntry);
         setTimeout(()=>{const idx=activeAudioNodes.indexOf(nodeEntry);if(idx>-1)activeAudioNodes.splice(idx,1);allNodes.forEach(n=>{try{n.disconnect();}catch(e){}});},(maxDecay+reverbAmt*2+1.5)*1000);
     }
-
+ 
     function highlightKey(el,dur=400){if(!el)return;el.classList.add('playing');setTimeout(()=>el.classList.remove('playing'),dur);}
-
+ 
     // =====================================================================
     //  PLAYBACK
     // =====================================================================
@@ -1544,7 +1556,7 @@
     function toggleLoop(){isLooping=!isLooping;document.querySelectorAll('.loop-btn').forEach(b=>b.classList.toggle('active',isLooping));}
     function disablePlayButtons(d){document.querySelectorAll('.play-stage-btn,.play-all-btn').forEach(b=>b.disabled=d);}
     function enablePauseButton(e){document.querySelectorAll('.pause-btn:not(.piano-roll-btn)').forEach(b=>b.disabled=!e);}
-
+ 
     async function playStage(stageIdx){
         if(isPlaying){stopPlayback();await sleep(100);}
         if(!state.summaryStages||!state.summaryStages[stageIdx])return;
@@ -1558,14 +1570,14 @@
         for(let g=0;g<noteGroups.length;g++){
             if(shouldStop)break;await waitWhilePaused();if(shouldStop)break;
             const group=noteGroups[g],lt=audioSettings.tempo;
-            group.forEach(note=>{if(!note.isRoot){playPianoTone(getFrequency(note.tone,note.octave),lt/1000);highlightKey(note.keyEl,lt-50);}});
+            group.forEach(note=>{if(!note.isRoot){const sm=audioSettings.sustain?2.5:1.0;playPianoTone(getFrequency(note.tone,note.octave),lt/1000*sm);highlightKey(note.keyEl,lt-50);}});
             await sleep(lt);
         }
         if(rootNote&&rootNote.keyEl)rootNote.keyEl.classList.remove('held');
         isPlaying=false;isPaused=false;shouldStop=false;disablePlayButtons(false);enablePauseButton(false);
         document.querySelectorAll('.pause-btn:not(.piano-roll-btn)').forEach(b=>{b.textContent='⏸ Pause';b.classList.remove('paused');});
     }
-
+ 
     async function playAllStages(){
         if(isPlaying){stopPlayback();await sleep(100);}
         if(!state.summaryStages||!state.summaryStages.length)return;
@@ -1584,7 +1596,7 @@
             for(let g=0;g<noteGroups.length;g++){
                 if(shouldStop)break;await waitWhilePaused();if(shouldStop)break;
                 const group=noteGroups[g],lt=audioSettings.tempo;
-                group.forEach(note=>{if(!note.isRoot){playPianoTone(getFrequency(note.tone,note.octave),lt/1000);highlightKey(note.keyEl,lt-50);}});
+                group.forEach(note=>{if(!note.isRoot){const sm=audioSettings.sustain?2.5:1.0;playPianoTone(getFrequency(note.tone,note.octave),lt/1000*sm);highlightKey(note.keyEl,lt-50);}});
                 await sleep(lt);
             }
             if(rootNote&&rootNote.keyEl)rootNote.keyEl.classList.remove('held');
@@ -1594,14 +1606,14 @@
         document.querySelectorAll('.pause-btn:not(.piano-roll-btn)').forEach(b=>{b.textContent='⏸ Pause';b.classList.remove('paused');});
         if(isLooping){await sleep(audioSettings.tempo);if(isLooping&&!shouldStop)playAllStages();}
     }
-
+ 
     // =====================================================================
     //  PIANO ROLL
     // =====================================================================
     let pianoRollNotes=[], pianoRollPlaying=false, pianoRollPaused=false;
     let practiceMode=false, practiceWaiting=null; // {noteIdx, beat}
-    let pianoRollData={keyWidth:0,pianoWidth:0,keyPositions:{},totalBeats:0,baseBeatHeight:35,baseTempo:600,beatHeight:35,currentPosition:0,isExpanded:false,containerHeight:450,leftHandKeys:7,leftOffset:0,cachedNoteEls:[],cachedNoteElMap:new Map()};
-
+    let pianoRollData={keyWidth:0,pianoWidth:0,keyPositions:{},totalBeats:0,baseBeatHeight:35,baseTempo:600,beatHeight:35,currentPosition:0,containerHeight:450,leftHandKeys:7,leftOffset:0,cachedNoteEls:[],cachedNoteElMap:new Map()};
+ 
     function updatePianoRoll(){
         if(isPlaying)stopPlayback();
         stopPianoRoll();
@@ -1614,9 +1626,8 @@
         } else if(state.selectedMelodyRow!==null){
             createPianoRoll(container);
         }
-        if(pianoRollData.isExpanded){const w=document.getElementById('pianoRollWrapper');if(w){w.classList.add('expanded');const eb=w.querySelector('.expand-btn');if(eb)eb.textContent='↕ Verkleinern';}}
     }
-
+ 
     function createPianoRoll(container){
         let melodyPattern;
         if(pieceGeneratorData.active&&pieceGeneratorData.melodyPattern) melodyPattern=pieceGeneratorData.melodyPattern;
@@ -1635,7 +1646,7 @@
                 <button class="piano-roll-btn" id="pianoRollPlayBtn" onclick="playPianoRoll()">▶ Abspielen</button>
                 <button class="piano-roll-btn pause-btn" id="pianoRollPauseBtn" onclick="togglePianoRollPause()" disabled>⏸ Pause</button>
                 <button class="piano-roll-btn stop-btn" id="pianoRollStopBtn" onclick="stopPianoRoll()" disabled>⏹ Stopp</button>
-                <button class="piano-roll-btn expand-btn" onclick="togglePianoRollExpand()">↕ Vergrößern</button>
+                <select class="piano-roll-btn" onchange="setPianoRollSize(this.value)" style="font-size:13px;padding:8px 10px;cursor:pointer;"><option value="450">Standard</option><option value="562">+25%</option><option value="675">+50%</option><option value="787">+75%</option><option value="900">+100%</option><option value="1012">+125%</option><option value="1125">+150%</option></select>
                 
                 
                 <button class="piano-roll-btn" onclick="savePianoRollJSON()" title="JSON speichern">💾</button>
@@ -1649,7 +1660,7 @@
                 <button class="piano-roll-btn" id="pianoRollPlayBtn" onclick="playPianoRoll()">▶ Abspielen</button>
                 <button class="piano-roll-btn pause-btn" id="pianoRollPauseBtn" onclick="togglePianoRollPause()" disabled>⏸ Pause</button>
                 <button class="piano-roll-btn stop-btn" id="pianoRollStopBtn" onclick="stopPianoRoll()" disabled>⏹ Stopp</button>
-                <button class="piano-roll-btn expand-btn" onclick="togglePianoRollExpand()">↕ Vergrößern</button>
+                <select class="piano-roll-btn" onchange="setPianoRollSize(this.value)" style="font-size:13px;padding:8px 10px;cursor:pointer;"><option value="450">Standard</option><option value="562">+25%</option><option value="675">+50%</option><option value="787">+75%</option><option value="900">+100%</option><option value="1012">+125%</option><option value="1125">+150%</option></select>
                 
                 
                 <button class="piano-roll-btn" onclick="savePianoRollJSON()" title="JSON speichern">💾</button>
@@ -1672,10 +1683,10 @@
         const timeline=document.createElement('div');timeline.className='piano-roll-timeline';timeline.id='pianoRollTimeline';
         timeline.innerHTML=`<div class="piano-roll-timeline-track" id="pianoRollTimelineTrack"></div><div class="piano-roll-timeline-position" id="pianoRollTimelinePos" style="top:0"></div><div class="piano-roll-timeline-viewport" id="pianoRollTimelineViewport"></div>`;
         main.appendChild(timeline);rollWrapper.appendChild(main);container.appendChild(rollWrapper);
-
+ 
         // Piano erstellen
-        const whiteKeys=FIXED_WHITE_KEYS+7, preSteps=12, leftHandKeys=14;
-        const dims=createPianoWithWhiteKeys(piano,whiteKeys,{startTone:state.currentTone,markScale:true,scaleTones:state.currentScaleTones,preSteps});
+        const whiteKeys=FIXED_WHITE_KEYS+7, leftHandKeys=14;
+        const dims=createPianoWithWhiteKeys(piano,whiteKeys,{startTone:'C',markScale:true,scaleTones:state.currentScaleTones});
         applyHandClasses(piano,dims.ww,leftHandKeys,dims.leftOffset);
         pianoRollData.keyWidth=dims.ww;pianoRollData.leftOffset=dims.leftOffset||0;pianoRollData.pianoWidth=piano.offsetWidth;pianoRollData.leftHandKeys=leftHandKeys;
         pianoRollData.keyPositions={};
@@ -1688,9 +1699,9 @@
         if(pieceGeneratorData.active&&pieceGeneratorData.sections) buildPieceNotes(melodyPattern,funcs);
         else buildPianoRollNotes(melodyPattern,funcs);
         setupPianoRollInteraction();
-        setTimeout(()=>{renderPianoRollNotes();renderPianoRollTimeline();},50);
+        setTimeout(()=>{renderPianoRollNotes();renderPianoRollTimeline();renderKeyLabels();},50);
     }
-
+ 
     function buildPianoRollNotes(melodyPattern, funcs){
         pianoRollNotes=[];pianoRollData.sectionMarkers=null;
         let gbc=0;
@@ -1701,11 +1712,11 @@
         const colOrder=state.melodyColumnOrder;
         const cPos=sorted['C']||[];
         const stp=sorted[state.currentTone];
-        const stCands=stp?stp.filter(p=>p.left+p.width/2<=lhb):[];
+        const stCands=stp?stp.filter(p=>p.left+p.width/2<=lhb-kw*0.5):[];
         const startLeft=stCands.length?stCands[stCands.length-1].left:lhb;
         // Referenz wandert von Stufe zu Stufe (identisch wie createMelodyPianoForStage)
         let referenceLeft=lhb;
-
+ 
         state.selectedProgression.forEach((deg,si)=>{
             const root=state.currentScaleTones[deg],terzIdx=(deg+2)%7,fc=funcs[deg];
             let mc=0;melodyPattern.forEach(v=>{if(v===1)mc++;});
@@ -1713,12 +1724,12 @@
             // Root
             const rp=sorted[root];let rootPos=null;
             if(rp){
-                if(root===state.currentTone){const c=rp.filter(p=>p.left+p.width/2<=lhb);rootPos=c.length?c[c.length-1]:null;}
+                if(root===state.currentTone){const c=rp.filter(p=>p.left+p.width/2<=lhb-kw*0.5);rootPos=c.length?c[c.length-1]:null;}
                 else if(deg<=2){const cands=rp.filter(p=>p.left+p.width/2<=lhb);if(cands.length)rootPos=cands.reduce((best,p)=>Math.abs(p.left-startLeft)<Math.abs(best.left-startLeft)?p:best);}
                 else{rootPos=rp.find(p=>p.left+p.width/2<=lhb);}
             }
             if(rootPos) pianoRollNotes.push({tone:root,left:rootPos.left,width:rootPos.width,keyEl:rootPos.element,funcClass:fc,duration:sb,startBeat:gbc,stageIdx:si,isRoot:true,num:1,volume:1.0,octave:getOctaveFromPosition(rootPos.left,cPos,lhb)});
-            // Melody: erste Note nächstliegend zur Referenz, Rest aufsteigend
+            // Melody
             const melodyOffsets=[];
             melodyPattern.forEach((val,colIdx)=>{if(val===1){const ci=colOrder[colIdx]!==undefined?colOrder[colIdx]:colIdx;melodyOffsets.push(ci);}});
             const uniqueOffsets=[...new Set(melodyOffsets)].sort((a,b)=>a-b);
@@ -1731,7 +1742,7 @@
                 if(!positions||!positions.length)return;
                 let tp;
                 if(i===0){
-                    // Erste Note: nächstliegend zur Referenz (gesamte Tastatur)
+                    // Erster Ton: nächstliegend zur Referenz (gesamte Tastatur)
                     tp=positions.reduce((best,p)=>Math.abs(p.left-referenceLeft)<Math.abs(best.left-referenceLeft)?p:best);
                     if(tp){ referenceLeft=tp.left; searchLeft=tp.left; }
                 } else {
@@ -1753,7 +1764,7 @@
         });
         pianoRollData.totalBeats=gbc;
     }
-
+ 
     function renderPianoRollNotes(){
         const container=document.getElementById('pianoRollNotes'),piano=document.getElementById('pianoRollKeyboard');
         if(!container||!piano)return;
@@ -1768,7 +1779,7 @@
             const el=document.createElement('div');el.className=`piano-roll-note note-${note.funcClass}`;el.dataset.noteIdx=idx;el.textContent=note.num;
             const h=note.duration*bh-gap,bp=ch+(note.startBeat*bh);
             const kc=ox+note.left+note.width/2,nl=kc-nw/2;
-            el.style.cssText=`width:${nw}px;height:${h}px;left:${nl}px;bottom:${bp}px;opacity:${note.isRoot?1:Math.max(0.4,Math.min(1,(note.volume||1.0)))};`;
+            el.style.cssText=`width:${nw}px;height:${h}px;left:${nl}px;bottom:${bp}px;`;
             container.appendChild(el);
         });
         refreshNoteElCache();
@@ -1789,7 +1800,7 @@
         const vp=document.getElementById('pianoRollTimelineViewport');
         if(vp){const vh=pianoRollData.containerHeight/(tb*pianoRollData.beatHeight)*th;vp.style.height=Math.min(vh,th)+'px';vp.style.top='0px';}
     }
-
+ 
     function setupPianoRollInteraction(){
         const na=document.getElementById('pianoRollNotes'),tl=document.getElementById('pianoRollTimeline');
         function canScroll(){return pianoRollPaused||(!pianoRollPlaying&&pianoRollNotes.length>0);}
@@ -1836,12 +1847,20 @@
         const vp=document.getElementById('pianoRollTimelineViewport');
         if(vp&&tl){const vh=parseFloat(vp.style.height)||30;const ps=shift-pianoRollData.containerHeight;const p=Math.max(0,Math.min(1,ps/(pianoRollData.totalBeats*pianoRollData.beatHeight)));vp.style.top=Math.min(p*tl.offsetHeight,tl.offsetHeight-vh)+'px';}
     }
-    function togglePianoRollExpand(){
-        const w=document.getElementById('pianoRollWrapper'),eb=w?w.querySelector('.expand-btn'):null;if(!w)return;
-        const cp=pianoRollData.currentPosition;pianoRollData.isExpanded=!pianoRollData.isExpanded;
-        w.classList.toggle('expanded',pianoRollData.isExpanded);
-        if(eb)eb.textContent=pianoRollData.isExpanded?'↕ Verkleinern':'↕ Vergrößern';
-        setTimeout(()=>{const nc=document.getElementById('pianoRollNotes');if(nc)pianoRollData.containerHeight=nc.offsetHeight;renderPianoRollNotes();renderPianoRollTimeline();if(cp>0&&!pianoRollPlaying){pianoRollData.currentPosition=cp;updatePianoRollVisuals(cp);}},50);
+    function setPianoRollSize(heightPx){
+        const h=parseInt(heightPx)||450;
+        const cp=pianoRollData.currentPosition;
+        const notes=document.getElementById('pianoRollNotes');
+        const tl=document.getElementById('pianoRollTimeline');
+        if(notes) notes.style.height=h+'px';
+        if(tl) tl.style.height=h+'px';
+        // Alle Selects synchronisieren
+        document.querySelectorAll('.piano-roll-controls select').forEach(s=>s.value=String(h));
+        setTimeout(()=>{
+            if(notes) pianoRollData.containerHeight=notes.offsetHeight;
+            renderPianoRollNotes();renderPianoRollTimeline();renderKeyLabels();
+            if(cp>0&&!pianoRollPlaying){pianoRollData.currentPosition=cp;updatePianoRollVisuals(cp);}
+        },50);
     }
     function togglePracticeMode(){
         practiceMode=!practiceMode;
@@ -1849,62 +1868,12 @@
         const btn=document.getElementById('practiceToggle');
         if(btn) btn.classList.toggle('active',practiceMode);
     }
-    function kmPlay(){
-        if(pianoRollPaused&&pianoRollPlaying){
-            // Resume from pause
-            pianoRollPaused=false;keyboardMapping.playing=true;
-            const pb=document.getElementById('kmPlayBtn'),pa=document.getElementById('kmPauseBtn');
-            if(pb){pb.disabled=true;pb.textContent='▶ Läuft...';}
-            if(pa){pa.disabled=false;pa.textContent='⏸ Pause';pa.classList.remove('paused');}
-            // Also update main pause button
-            const mpa=document.getElementById('pianoRollPauseBtn');
-            if(mpa){mpa.textContent='⏸ Pause';mpa.classList.remove('paused');}
-            return;
-        }
-        if(pianoRollPlaying){stopPianoRoll();return;}
-        keyboardMapping.playing=true;
-        playPianoRoll();
-        const pb=document.getElementById('kmPlayBtn'),sb=document.getElementById('kmStopBtn'),pa=document.getElementById('kmPauseBtn');
-        if(pb){pb.disabled=true;pb.textContent='▶ Läuft...';}
-        if(sb) sb.disabled=false;
-        if(pa) pa.disabled=false;
-    }
-    function kmPause(){
-        if(!pianoRollPlaying)return;
-        pianoRollPaused=!pianoRollPaused;
-        practiceWaiting=null;
-        const pa=document.getElementById('kmPauseBtn'),pb=document.getElementById('kmPlayBtn');
-        if(pianoRollPaused){
-            stopAllSounds();
-            if(pa){pa.textContent='▶ Weiter';pa.classList.add('paused');}
-            if(pb){pb.disabled=true;pb.textContent='▶ Abspielen';}
-        } else {
-            keyboardMapping.playing=true;
-            if(pa){pa.textContent='⏸ Pause';pa.classList.remove('paused');}
-            if(pb){pb.disabled=true;pb.textContent='▶ Läuft...';}
-        }
-        // Sync main pause
-        const mpa=document.getElementById('pianoRollPauseBtn');
-        if(mpa){mpa.textContent=pianoRollPaused?'▶ Weiter':'⏸ Pause';mpa.classList.toggle('paused',pianoRollPaused);}
-    }
-    function kmStop(){
-        keyboardMapping.playing=false;
-        stopPianoRoll();
-        const pb=document.getElementById('kmPlayBtn'),sb=document.getElementById('kmStopBtn'),pa=document.getElementById('kmPauseBtn');
-        if(pb){pb.disabled=false;pb.textContent='▶ Abspielen';}
-        if(sb) sb.disabled=true;
-        if(pa){pa.disabled=true;pa.textContent='⏸ Pause';pa.classList.remove('paused');}
-    }
     let kmLoopActive=false, kmLoopStart=null, kmLoopEnd=null, kmLoopSettingStart=true;
     function toggleKmLoop(){
         kmLoopActive=!kmLoopActive;
         const btn=document.getElementById('kmLoopBtn');
         if(btn) btn.style.background=kmLoopActive?'#4CAF50':'#9C27B0';
         if(!kmLoopActive){kmLoopStart=null;kmLoopEnd=null;kmLoopSettingStart=true;renderLoopMarkers();}
-        else {
-            const st=document.getElementById('kmStatus');
-            if(st) st.textContent='Klicke auf den Zeitleisten-Balken, um Start und Ende der Schleife zu setzen.';
-        }
     }
     function setLoopPoint(position){
         if(!kmLoopActive)return;
@@ -1912,13 +1881,9 @@
         const beat=position*totalBeats;
         if(kmLoopSettingStart){
             kmLoopStart=beat;kmLoopEnd=null;kmLoopSettingStart=false;
-            const st=document.getElementById('kmStatus');
-            if(st) st.textContent='Start gesetzt. Klicke erneut für das Ende der Schleife.';
         } else {
             kmLoopEnd=Math.max(beat,kmLoopStart+1);
             kmLoopSettingStart=true;
-            const st=document.getElementById('kmStatus');
-            if(st) st.textContent=`Schleife gesetzt. Wird beim Abspielen wiederholt.`;
         }
         renderLoopMarkers();
     }
@@ -1945,7 +1910,8 @@
         if(note){
             initAudio();
             const lt=audioSettings.tempo;
-            playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000,note.volume||1.0);
+            const sustainMult=audioSettings.sustain?2.5:1.0;
+            playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000*sustainMult,note.volume||1.0);
             if(pianoRollData._playedNotes) pianoRollData._playedNotes.add(idx);
             const ne=pianoRollData.cachedNoteElMap.get(idx);
             if(ne) ne.classList.add('active');
@@ -1970,29 +1936,18 @@
         practiceWaiting=null;
         const btn=document.getElementById('pianoRollPauseBtn');
         if(btn){btn.textContent=pianoRollPaused?'▶ Weiter':'⏸ Pause';btn.classList.toggle('paused',pianoRollPaused);}
-        const kpa=document.getElementById('kmPauseBtn'),kpb=document.getElementById('kmPlayBtn');
-        if(kpa){kpa.textContent=pianoRollPaused?'▶ Weiter':'⏸ Pause';kpa.classList.toggle('paused',pianoRollPaused);}
-        if(pianoRollPaused){
-            stopAllSounds();disablePlayButtons(false);
-            keyboardMapping.playing=false;
-            if(kpb){kpb.disabled=true;kpb.textContent='▶ Abspielen';}
-        } else {
-            disablePlayButtons(true);
-            if(kpb){kpb.disabled=true;kpb.textContent='▶ Läuft...';}
-        }
+        if(pianoRollPaused){stopAllSounds();disablePlayButtons(false);}
+        else {disablePlayButtons(true);}
     }
     function stopPianoRoll(){
-        pianoRollPlaying=false;pianoRollPaused=false;practiceWaiting=null;keyboardMapping.playing=false;stopAllSounds();
+        pianoRollPlaying=false;pianoRollPaused=false;practiceWaiting=null;stopAllSounds();
         const pb=document.getElementById('pianoRollPlayBtn'),pa=document.getElementById('pianoRollPauseBtn'),ps=document.getElementById('pianoRollStopBtn');
         if(pb){pb.disabled=false;pb.textContent='▶ Abspielen';}if(pa){pa.disabled=true;pa.textContent='⏸ Pause';pa.classList.remove('paused');}if(ps)ps.disabled=true;
-        const kpb=document.getElementById('kmPlayBtn'),ksb=document.getElementById('kmStopBtn'),kpa=document.getElementById('kmPauseBtn');
-        if(kpb){kpb.disabled=false;kpb.textContent='▶ Abspielen';}if(ksb)ksb.disabled=true;
-        if(kpa){kpa.disabled=true;kpa.textContent='⏸ Pause';kpa.classList.remove('paused');}
         if(!isPaused){isPlaying=false;disablePlayButtons(false);}
         document.querySelectorAll('.piano-roll-note').forEach(el=>{el.classList.remove('active','passed');el.style.transform='';el.style.opacity='';});
         pianoRollData.currentPosition=0;updatePianoRollVisuals(0);
     }
-
+ 
     async function playPianoRoll(){
         if(isPlaying&&!pianoRollPlaying){stopPlayback();await sleep(100);}
         if(pianoRollPlaying||!pianoRollNotes.length)return;
@@ -2017,7 +1972,7 @@
         let activeRootKeys=new Map(),finishedNotes=new Set();
         pianoRollData._playedNotes=new Set();
         const playedNotes=pianoRollData._playedNotes;
-
+ 
         function animate(){
             if(shouldStop||!pianoRollPlaying){cleanup();return;}
             const now=performance.now();
@@ -2050,20 +2005,18 @@
                 pauseStart=0;pauseStartPosition=0;lastFrameTime=now;
             }
             // Practice mode: freeze NUR wenn Note an der Spiellinie angekommen ist
-            if(keyboardMapping.playing&&practiceMode&&practiceWaiting){
-                const freezeBeat=practiceWaiting.beat; // = note.startBeat
+            if(practiceMode&&practiceWaiting){
+                const freezeBeat=practiceWaiting.beat;
                 const delta2=now-lastFrameTime;lastFrameTime=now;
                 const lt2=audioSettings.tempo;
                 const tentativeBeat=currentBeat+delta2/lt2;
                 if(tentativeBeat>=freezeBeat){
-                    // An der Linie angekommen → einfrieren
                     currentBeat=freezeBeat;
                     const freezeShift=(freezeBeat+containerHeight/beatHeight)*beatHeight;
                     const freezeTs=`translateY(${freezeShift}px)`;
                     for(let i=0;i<pianoRollData.cachedNoteEls.length;i++)pianoRollData.cachedNoteEls[i].style.transform=freezeTs;
                     requestAnimationFrame(animate);return;
                 }
-                // Noch nicht an der Linie → weiterscrollen (Input aber schon akzeptiert)
                 currentBeat=tentativeBeat;
                 const shift2=(currentBeat+containerHeight/beatHeight)*beatHeight;
                 const ts2=`translateY(${shift2}px)`;
@@ -2086,35 +2039,26 @@
             const vpe=document.getElementById('pianoRollTimelineViewport');
             if(vpe&&tle){const vh=parseFloat(vpe.style.height)||30;const tp=Math.max(0,Math.min(1,currentBeat/(totalBeats||1)));vpe.style.top=Math.min(tp*tle.offsetHeight,tle.offsetHeight-vh)+'px';}
             // Play notes
-            const isKmMode=keyboardMapping.playing;
-            const bufferBeats=isKmMode?200/lt:0; // 200ms Vorlauf für Input
+            const bufferBeats=practiceMode?200/lt:0;
             pianoRollNotes.forEach((note,idx)=>{
                 const ne=pianoRollData.cachedNoteElMap.get(idx);if(!ne)return;
-                // Pufferzone: Input akzeptieren bevor Note die Linie erreicht
-                if(isKmMode&&practiceMode&&!practiceWaiting&&currentBeat>=note.startBeat-bufferBeats&&!playedNotes.has(idx)){
+                // Übungsmodus: Pufferzone + auf Taste warten
+                if(practiceMode&&!practiceWaiting&&currentBeat>=note.startBeat-bufferBeats&&!playedNotes.has(idx)){
                     practiceWaiting={noteIdx:idx,beat:note.startBeat};
                     ne.classList.add('active');
                     checkPressedKeysForNext();
-                    if(!practiceWaiting)return; // wurde sofort aufgelöst
+                    if(!practiceWaiting)return;
                 }
-                // Erst an der Linie einfrieren (nicht früher)
-                if(isKmMode&&practiceMode&&practiceWaiting&&practiceWaiting.noteIdx===idx&&currentBeat>=note.startBeat){
+                if(practiceMode&&practiceWaiting&&practiceWaiting.noteIdx===idx&&currentBeat>=note.startBeat){
                     currentBeat=note.startBeat;
                     return;
                 }
                 if(currentBeat>=note.startBeat&&!playedNotes.has(idx)){
-                    if(isKmMode&&!practiceMode){
-                        // Frei-Modus ohne Sound
-                        playedNotes.add(idx);ne.classList.add('active');ne.classList.remove('passed');
-                        if(note.keyEl){if(note.isRoot){note.keyEl.classList.add('held');activeRootKeys.set(note.tone+'-'+note.stageIdx,note.keyEl);}else{highlightKey(note.keyEl,note.duration*lt*0.9);}}
-                        return;
-                    }
-                    if(!isKmMode){
-                        // Normal-Modus: automatischer Sound
-                        playedNotes.add(idx);ne.classList.add('active');ne.classList.remove('passed');
-                        playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000,note.volume||1.0);
-                        if(note.keyEl){if(note.isRoot){note.keyEl.classList.add('held');activeRootKeys.set(note.tone+'-'+note.stageIdx,note.keyEl);}else{highlightKey(note.keyEl,note.duration*lt*0.9);}}
-                    }
+                    // Normal: automatischer Sound (nur wenn Übungsmodus AUS)
+                    playedNotes.add(idx);ne.classList.add('active');ne.classList.remove('passed');
+                    const sustainMult=audioSettings.sustain?2.5:1.0;
+                    playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000*sustainMult,note.volume||1.0);
+                    if(note.keyEl){if(note.isRoot){note.keyEl.classList.add('held');activeRootKeys.set(note.tone+'-'+note.stageIdx,note.keyEl);}else{highlightKey(note.keyEl,note.duration*lt*0.9);}}
                 }
                 if(currentBeat>=note.startBeat+note.duration&&!finishedNotes.has(idx)){
                     finishedNotes.add(idx);ne.classList.remove('active');ne.classList.add('passed');
@@ -2127,7 +2071,6 @@
                 playedNotes.clear();finishedNotes.clear();practiceWaiting=null;
                 activeRootKeys.forEach(k=>k.classList.remove('held'));activeRootKeys.clear();
                 pianoRollData.cachedNoteEls.forEach(el=>el.classList.remove('active','passed'));
-                // Noten vor dem Loop-Start als gespielt markieren
                 pianoRollNotes.forEach((n,idx)=>{
                     if(n.startBeat+n.duration<=kmLoopStart){playedNotes.add(idx);finishedNotes.add(idx);}
                 });
@@ -2138,16 +2081,12 @@
             pianoRollPlaying=false;isPlaying=false;pianoRollPaused=false;practiceWaiting=null;
             activeRootKeys.forEach(k=>k.classList.remove('held'));activeRootKeys.clear();
             if(pb){pb.disabled=false;pb.textContent='▶ Abspielen';}if(pa){pa.disabled=true;pa.textContent='⏸ Pause';pa.classList.remove('paused');}if(ps)ps.disabled=true;
-            const kpb=document.getElementById('kmPlayBtn'),ksb=document.getElementById('kmStopBtn'),kpa=document.getElementById('kmPauseBtn');
-            if(kpb){kpb.disabled=false;kpb.textContent='▶ Abspielen';}if(ksb)ksb.disabled=true;
-            if(kpa){kpa.disabled=true;kpa.textContent='⏸ Pause';kpa.classList.remove('paused');}
-            keyboardMapping.playing=false;
             disablePlayButtons(false);
             setTimeout(()=>{document.querySelectorAll('.piano-roll-note').forEach(el=>{el.classList.remove('active','passed');el.style.transform='';});pianoRollData.currentPosition=0;updatePianoRollVisuals(0);},500);
         }
         requestAnimationFrame(animate);
     }
-
+ 
     // =====================================================================
     //  PIECE GENERATOR
     // =====================================================================
@@ -2170,13 +2109,13 @@
         // Hauptteil: volles Muster + 1-2 Extra-Töne über dem kleinen Finger
         const ht=generateHauptteil(ac);
         return [
-            {name:'Einleitung 1',activeCols:e1,repeat:1,octaveUp:false},
-            {name:'Einleitung 2',activeCols:e2,repeat:1,octaveUp:false},
-            {name:'Hauptteil 1',activeCols:ht,repeat:1,octaveUp:false},
-            {name:'Hauptteil 2',activeCols:ht,repeat:1,octaveUp:false},
-            {name:'Hauptteil 1',activeCols:ht,repeat:1,octaveUp:false},
-            {name:'Schluss 1',activeCols:e2,repeat:1,octaveUp:false},
-            {name:'Schluss 2',activeCols:e1,repeat:1,octaveUp:false}
+            {name:'Einleitung 1',activeCols:e1,repeat:1,octaveUp:false,volume:0.70,tempoMult:1.41},
+            {name:'Einleitung 2',activeCols:e2,repeat:1,octaveUp:false,volume:0.85,tempoMult:1.25},
+            {name:'Hauptteil 1',activeCols:ht,repeat:1,octaveUp:false,volume:1.0,tempoMult:1.0},
+            {name:'Hauptteil 2',activeCols:ht,repeat:1,octaveUp:false,volume:1.1,tempoMult:1.0},
+            {name:'Hauptteil 1',activeCols:ht,repeat:1,octaveUp:false,volume:1.0,tempoMult:1.0},
+            {name:'Schluss 1',activeCols:e2,repeat:1,octaveUp:false,volume:0.85,tempoMult:1.25},
+            {name:'Schluss 2',activeCols:e1,repeat:1,octaveUp:false,volume:0.70,tempoMult:1.41}
         ];
     }
     function generateHauptteil(ac){
@@ -2197,7 +2136,7 @@
         pieceGeneratorData.sections=buildPieceSections(ac);updatePianoRoll();
     }
     function stopPieceMode(){pieceGeneratorData.active=false;pieceGeneratorData.sections=null;updatePianoRoll();}
-
+ 
     function buildPieceNotes(basePattern, funcs){
         pianoRollNotes=[];pianoRollData.sectionMarkers=null;
         let gbc=0;const ts=state.selectedProgression.length;
@@ -2209,27 +2148,38 @@
         const cPos=sorted['C']||[];
         let sig=0;
         const stp=sorted[state.currentTone];
-        const stCands=stp?stp.filter(p=>p.left+p.width/2<=lhb):[];
+        const stCands=stp?stp.filter(p=>p.left+p.width/2<=lhb-kw*0.5):[];
         const startLeft=stCands.length?stCands[stCands.length-1].left:lhb;
-
-        pieceGeneratorData.sections.forEach((section)=>{
+ 
+        pieceGeneratorData.sections.forEach((section,sectionIdx)=>{
             const sp=new Array(7).fill(0);
             section.activeCols.forEach(c=>{if(c>=0&&c<sp.length)sp[c]=1;});
             const isOctaveUp=!!section.octaveUp;
+            const sectionVol=section.volume||1.0;
+            const sectionTempo=section.tempoMult||1.0;
+            // Stufenloser Übergang: vorherige Sektion für Interpolation
+            const prevSection=sectionIdx>0?pieceGeneratorData.sections[sectionIdx-1]:null;
+            const prevVol=prevSection?(prevSection.volume||1.0):sectionVol;
+            const prevTempo=prevSection?(prevSection.tempoMult||1.0):sectionTempo;
+            const totalNotesInSection=state.selectedProgression.length;
             for(let rep=0;rep<section.repeat;rep++){
                 // Reset: jeder Progression-Durchlauf startet frisch
                 let referenceLeft=lhb;
-                state.selectedProgression.forEach((deg)=>{
+                state.selectedProgression.forEach((deg,progIdx)=>{
+                    // Stufenloser Übergang über die gesamte Sektion
+                    const progress=Math.min(1,progIdx/(totalNotesInSection));
+                    const noteVol=prevVol+(sectionVol-prevVol)*progress;
+                    const noteTempo=prevTempo+(sectionTempo-prevTempo)*progress;
                     let mc=0;sp.forEach(v=>{if(v===1)mc++;});
                     const sb=mc;
                     const root=state.currentScaleTones[deg],terzIdx=(deg+2)%7,fc=funcs[deg];
                     const rp=sorted[root];let rootPos=null;
                     if(rp){
-                        if(root===state.currentTone){const c=rp.filter(p=>p.left+p.width/2<=lhb);rootPos=c.length?c[c.length-1]:null;}
+                        if(root===state.currentTone){const c=rp.filter(p=>p.left+p.width/2<=lhb-kw*0.5);rootPos=c.length?c[c.length-1]:null;}
                         else if(deg<=2){const cands=rp.filter(p=>p.left+p.width/2<=lhb);if(cands.length)rootPos=cands.reduce((best,p)=>Math.abs(p.left-startLeft)<Math.abs(best.left-startLeft)?p:best);}
                         else{rootPos=rp.find(p=>p.left+p.width/2<=lhb);}
                     }
-                    if(rootPos) pianoRollNotes.push({tone:root,left:rootPos.left,width:rootPos.width,keyEl:rootPos.element,funcClass:fc,duration:sb,startBeat:gbc,stageIdx:sig,isRoot:true,num:1,volume:1.0,octave:getOctaveFromPosition(rootPos.left,cPos,lhb)});
+                    if(rootPos) pianoRollNotes.push({tone:root,left:rootPos.left,width:rootPos.width,keyEl:rootPos.element,funcClass:fc,duration:sb*noteTempo,startBeat:gbc,stageIdx:sig,isRoot:true,num:1,volume:noteVol,octave:getOctaveFromPosition(rootPos.left,cPos,lhb)});
                     const melodyOffsets=[];
                     sp.forEach((val,colIdx)=>{if(val===1){const ci=colOrder[colIdx]!==undefined?colOrder[colIdx]:colIdx;melodyOffsets.push(ci);}});
                     const uniqueOff=[...new Set(melodyOffsets)].sort((a,b)=>a-b);
@@ -2255,11 +2205,11 @@
                     melodyOffsets.forEach(ci=>{
                         const tp=offMap.get(ci);
                         if(tp){
-                            pianoRollNotes.push({tone:tp.element.dataset.tone,left:tp.left,width:tp.width,keyEl:tp.element,funcClass:fc,duration:1.0,startBeat:mb,stageIdx:sig,isRoot:false,num:mn,volume:isOctaveUp?0.85:1.0,octave:getOctaveFromPosition(tp.left,cPos,lhb)+(isOctaveUp?1:0)});
-                            mn++;mb+=1;
+                            pianoRollNotes.push({tone:tp.element.dataset.tone,left:tp.left,width:tp.width,keyEl:tp.element,funcClass:fc,duration:1.0*noteTempo,startBeat:mb,stageIdx:sig,isRoot:false,num:mn,volume:noteVol,octave:getOctaveFromPosition(tp.left,cPos,lhb)+(isOctaveUp?1:0)});
+                            mn++;mb+=1.0*noteTempo;
                         }
                     });
-                    gbc+=sb+0.5;sig++;
+                    gbc+=sb*noteTempo+0.5*noteTempo;sig++;
                 });
                 gbc+=0.25;
             }
@@ -2267,7 +2217,7 @@
         }); // sections forEach
         pianoRollData.totalBeats=gbc;
     }
-
+ 
     // =====================================================================
     //  EXPORT (JSON / MIDI)
     // =====================================================================
@@ -2318,7 +2268,7 @@
     function downloadFile(text,filename,mime){triggerDownload(`data:${mime};base64,${btoa(unescape(encodeURIComponent(text)))}`,filename);}
     function downloadBinaryFile(u8,filename,mime){let b='';for(let i=0;i<u8.length;i++)b+=String.fromCharCode(u8[i]);triggerDownload(`data:${mime};base64,${btoa(b)}`,filename);}
     function triggerDownload(uri,filename){const a=document.createElement('a');a.href=uri;a.download=filename;a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),100);}
-
+ 
     function showPianoRollHelp(){
         const ex=document.querySelector('.pr-help-overlay');if(ex){ex.remove();return;}
         const o=document.createElement('div');o.className='pr-help-overlay';o.onclick=e=>{if(e.target===o)o.remove();};
@@ -2328,26 +2278,92 @@
         <div class="pr-help-section"><strong>⏹ Stopp</strong><p>Beendet die Wiedergabe und springt zurück.</p></div>
         <div class="pr-help-section"><strong>🎼 Stück generieren</strong><p>Erstellt ein Musikstück mit Intro, Hauptteil und Outro.</p></div>
         <div class="pr-help-section"><strong>💾 / 📂 JSON</strong><p>Stück speichern und wieder laden.</p></div>
-        <div class="pr-help-section"><strong>🎹 MIDI</strong><p>Als MIDI-Datei exportieren für Musik-Programme.</p></div></div>`;
+        <div class="pr-help-section"><strong>🎹 MIDI</strong><p>Als MIDI-Datei exportieren für Musik-Programme.</p></div>
+        <div class="pr-help-section"><strong>🎹 Haltepedal (Sustain)</strong><p>Standardmäßig eingeschaltet. Die Töne klingen länger nach und überlappen sich, wie bei einem echten Klavier mit gedrücktem Haltepedal. Dadurch entsteht ein vollerer, natürlicherer Klang. Das Haltepedal kann in den Lautstärke-Einstellungen deaktiviert werden.</p></div></div>`;
         document.body.appendChild(o);
     }
-
+ 
     // =====================================================================
     //  KEYBOARD MAPPING
     // =====================================================================
     const keyboardMapping={
         left:{keys:['a','s','d','f'], tones:[]}, // a=tiefster(kl.Finger), f=höchster(Zeigefinger)
         right:{keys:['j','k','l','ö',' '], nums:[1,2,3,4,5]},
-        activeLeft:null, editing:null, playing:false,
-        leftSeqIdx:0, rightSeqIdx:0
+        activeLeft:null, editing:null,
+        leftSeqIdx:0, rightSeqIdx:0, showKeys:false
     };
-
+ 
+    function toggleShowKeys(){
+        keyboardMapping.showKeys=!keyboardMapping.showKeys;
+        const btn=document.getElementById('showKeysToggle');
+        if(btn) btn.style.background=keyboardMapping.showKeys?'#4CAF50':'#607D8B';
+        renderKeyLabels();
+    }
+ 
+    function renderKeyLabels(){
+        document.querySelectorAll('.piano-key-label').forEach(el=>el.remove());
+        if(!keyboardMapping.showKeys)return;
+        const piano=document.getElementById('pianoRollKeyboard');
+        if(!piano||!pianoRollNotes.length)return;
+ 
+        // Gleiche Berechnungen wie createMelodyPianoForStage
+        const firstWhite=piano.querySelector('.white-key');
+        const firstBlack=piano.querySelector('.black-key');
+        if(!firstWhite)return;
+        const ww=parseFloat(firstWhite.style.width);
+        const bh=firstBlack?parseFloat(firstBlack.style.height):0;
+        const numSize=Math.max(16,Math.round(ww*0.45));
+        const numTop=Math.round(bh)+5; // Weiße Tasten: direkt unter schwarzen Tasten
+ 
+        const rootPositions=new Map();
+        const melodyPositions=new Map();
+        const firstStageIdx=pianoRollNotes[0].stageIdx;
+        pianoRollNotes.forEach(n=>{
+            if(!n.keyEl)return;
+            const left=parseFloat(n.keyEl.style.left);
+            const width=parseFloat(n.keyEl.style.width);
+            if(n.isRoot&&!rootPositions.has(n.tone)){
+                rootPositions.set(n.tone,{left,width,keyEl:n.keyEl});
+            }
+            if(!n.isRoot&&n.stageIdx===firstStageIdx&&!melodyPositions.has(n.num)){
+                melodyPositions.set(n.num,{left,width,keyEl:n.keyEl,tone:n.tone});
+            }
+        });
+ 
+        function addKeyLabel(pos,text,color){
+            const label=document.createElement('div');
+            label.className='piano-key-label';
+            label.textContent=text;
+            const isBlack=pos.keyEl.classList.contains('black-key');
+            const keyHeight=parseFloat(pos.keyEl.style.height);
+            const top=isBlack?Math.round(keyHeight/2-numSize/2):numTop;
+            const centerLeft=pos.left+pos.width/2-numSize/2;
+            label.style.cssText=`left:${centerLeft}px;width:${numSize}px;top:${top}px;`
+                +`color:${color};font-size:${Math.round(numSize*0.6)}px;font-weight:bold;`;
+            piano.appendChild(label);
+        }
+ 
+        // Linke Hand Labels (blau)
+        keyboardMapping.left.tones.forEach((tone,i)=>{
+            const pos=rootPositions.get(tone);
+            if(!pos)return;
+            const key=keyboardMapping.left.keys[i]||'?';
+            addKeyLabel(pos,key===' '?'SP':key.toUpperCase(),'#1565C0');
+        });
+ 
+        // Rechte Hand Labels (rot)
+        melodyPositions.forEach((pos,num)=>{
+            const key=keyboardMapping.right.keys[num-1]||'?';
+            addKeyLabel(pos,key===' '?'SP':key.toUpperCase(),'#C62828');
+        });
+    }
+ 
     function updateKeyboardMapping(){
         const area=document.getElementById('keyboardMappingArea');
         if(!area)return;
         if(!state.selectedProgression.length||state.selectedMelodyRow===null){area.style.display='none';return;}
         area.style.display='';
-
+ 
         // Grundtöne aus Progression (sortiert nach Tonhöhe, tiefster=index 0)
         const roots=state.selectedProgression.map(deg=>state.currentScaleTones[deg]);
         // Einzigartige Töne, Reihenfolge beibehalten für Stufen-Zuordnung
@@ -2364,7 +2380,7 @@
             return ai-bi;
         });
         keyboardMapping.left.tones=uniqueRoots;
-
+ 
         // Linke Hand Tabelle: Kleiner Finger (tiefster) → Zeigefinger (höchster)
         const fingerNamesL=state.language==='de'?['Kleiner Finger','Ringfinger','Mittelfinger','Zeigefinger']:['Pinky','Ring','Middle','Index'];
         const lt=document.getElementById('kmLeftTable');
@@ -2383,13 +2399,13 @@
         uniqueRoots.forEach((t,i)=>{
             const key=keyboardMapping.left.keys[i]||'–';
             const td=document.createElement('td');
-            td.className='km-key';td.dataset.hand='left';td.dataset.index=i;
+            td.className='km-key km-left';td.dataset.hand='left';td.dataset.index=i;
             td.textContent=key==' '?'Leertaste':key.toUpperCase();
             td.onclick=()=>startEditKey('left',i,td);
             lkr.appendChild(td);
         });
         lt.appendChild(lkr);
-
+ 
         // Rechte Hand Tabelle: Zeigefinger → Kleiner Finger
         const fingerNamesR=state.language==='de'?['Zeigefinger','Mittelfinger','Ringfinger','Kleiner Finger','Daumen']:['Index','Middle','Ring','Pinky','Thumb'];
         const rt=document.getElementById('kmRightTable');
@@ -2408,21 +2424,21 @@
         for(let i=0;i<toneCount;i++){
             const key=keyboardMapping.right.keys[i]||'–';
             const td=document.createElement('td');
-            td.className='km-key';td.dataset.hand='right';td.dataset.index=i;
+            td.className='km-key km-right';td.dataset.hand='right';td.dataset.index=i;
             td.textContent=key==' '?'Leertaste':key.toUpperCase();
             td.onclick=()=>startEditKey('right',i,td);
             rkr.appendChild(td);
         }
         rt.appendChild(rkr);
     }
-
+ 
     function startEditKey(hand,index,td){
         document.querySelectorAll('.km-key.editing').forEach(el=>el.classList.remove('editing'));
         td.classList.add('editing');
         keyboardMapping.editing={hand,index,td};
         document.getElementById('kmStatus').textContent='Drücke jetzt die gewünschte Taste...';
     }
-
+ 
     function resetKeyboardMapping(){
         keyboardMapping.left.keys=['a','s','d','f'];
         keyboardMapping.right.keys=['j','k','l','ö',' '];
@@ -2431,14 +2447,14 @@
         updateKeyboardMapping();
         document.getElementById('kmStatus').textContent='Belegung zurückgesetzt.';
     }
-
+ 
     // Tastatur-Events (mit Key-Repeat Schutz)
     const pressedKeys=new Set();
     document.addEventListener('keyup',e=>{pressedKeys.delete(e.key.toLowerCase());});
     document.addEventListener('keydown',e=>{
         if(!state.selectedProgression.length||state.selectedMelodyRow===null)return;
         const key=e.key.toLowerCase();
-
+ 
         // Edit-Modus
         if(keyboardMapping.editing){
             const ed=keyboardMapping.editing;
@@ -2449,21 +2465,22 @@
             ed.td.classList.remove('editing');
             keyboardMapping.editing=null;
             document.getElementById('kmStatus').textContent='Taste zugewiesen!';
+            renderKeyLabels();
             e.preventDefault();
             return;
         }
-
+ 
         // Key-Repeat Schutz
         if(pressedKeys.has(key))return;
         pressedKeys.add(key);
-
+ 
         // Im Tastatur-Übungsmodus: versuche wartende Note aufzulösen
-        if(keyboardMapping.playing&&practiceMode&&practiceWaiting){
+        if(practiceMode&&practiceWaiting){
             e.preventDefault();
             tryResolvePracticeKey(key);
             return;
         }
-
+ 
         // Frei-Modus (ohne Übungsmodus)
         let handled=false;
         // Linke Hand
@@ -2528,13 +2545,13 @@
             }
         }
     });
-
+ 
     // Übungsmodus: versuche eine wartende Note mit einer Taste aufzulösen
     function tryResolvePracticeKey(key){
         if(!practiceWaiting)return;
         const wn=pianoRollNotes[practiceWaiting.noteIdx];
         if(!wn)return;
-
+ 
         if(wn.isRoot){
             // Root-Note: linke Hand prüfen
             const leftMatches=[];
@@ -2563,7 +2580,7 @@
             }
         }
     }
-
+ 
     // Nach Auflösung: prüfe ob bereits gedrückte Tasten die nächste Note lösen
     function checkPressedKeysForNext(){
         if(!practiceWaiting)return;
@@ -2572,7 +2589,17 @@
             if(!practiceWaiting)break;
         }
     }
-
+ 
+    // Resize: Labels + Piano Roll neu positionieren
+    window.addEventListener('resize',debounce(()=>{
+        if(keyboardMapping.showKeys)renderKeyLabels();
+        const nc=document.getElementById('pianoRollNotes');
+        if(nc&&pianoRollNotes.length){
+            pianoRollData.containerHeight=nc.offsetHeight;
+            renderPianoRollNotes();renderPianoRollTimeline();renderKeyLabels();
+        }
+    },200));
+ 
     // =====================================================================
     //  GUIDED STEPS
     // =====================================================================
@@ -2614,7 +2641,7 @@
         if(!spacer){spacer=document.createElement('div');spacer.id='bottomSpacer';document.getElementById('moduleContainer').after(spacer);}
         spacer.style.height=hasTone&&!hasProg?'60vh':'0';
     }
-
+ 
     // =====================================================================
     //  DARK MODE
     // =====================================================================
@@ -2624,7 +2651,7 @@
         const btn=document.getElementById('themeToggle');if(btn)btn.textContent=isDarkMode?'☀️':'🌙';
         localStorage.setItem('darkMode',isDarkMode);
     }
-
+ 
     // =====================================================================
     //  INIT
     // =====================================================================
@@ -2635,12 +2662,12 @@
         updateLanguage();generateMelodyTable();
     }));
     document.querySelectorAll('.scale-type-btn').forEach(btn=>btn.addEventListener('click',()=>setScaleType(btn.dataset.scale)));
-
+ 
     // Initial render
     updateSelectPiano();
     updateGuidedState();
     updateModuleVisibility();
-
+ 
     // Dark mode from localStorage
     if(localStorage.getItem('darkMode')==='true'){
         isDarkMode=true;document.body.classList.add('dark-mode');
