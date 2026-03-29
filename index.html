@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>            
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,7 @@
     <meta name="description" content="Interaktiver Tonleiter-Visualisierer für Klavier-Anfänger. Lerne Tonleitern, Akkorde und Melodien visuell.">
     <meta name="theme-color" content="#4CAF50">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Tonleiter-Visualisierer v6.9.1</title>
+    <title>Tonleiter-Visualisierer v6.9.4</title>
     <style>
         /* ===== RESET & BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -745,6 +745,79 @@
     }
 
     // =====================================================================
+    //  HAND LAYOUT CALCULATION
+    // =====================================================================
+    // Berechnet die optimale Positionierung beider Hände:
+    // - Linke Hand: alle Grundtöne aufsteigend, kompakt, kein Ton fällt vom Rand
+    // - Rechte Hand: startet eine Oktave über dem höchsten linken-Hand-Ton
+    let cachedHandLayout=null;
+
+    function calculateHandLayout(sortedPositions, ww){
+        if(!state.selectedProgression.length||!state.currentScaleTones.length) return null;
+        // 1. Einzigartige Grundtöne sammeln
+        const seen=new Set();
+        const rootInfos=[];
+        state.selectedProgression.forEach(deg=>{
+            if(seen.has(deg))return;
+            seen.add(deg);
+            rootInfos.push({deg, tone:state.currentScaleTones[deg], semi:CONFIG.allTones.indexOf(state.currentScaleTones[deg])});
+        });
+        if(!rootInfos.length) return null;
+
+        // 2. Optimale Rotation finden (minimaler Halbton-Span)
+        rootInfos.sort((a,b)=>a.semi-b.semi);
+        let bestStart=0, bestSpan=Infinity;
+        for(let s=0;s<rootInfos.length;s++){
+            const base=rootInfos[s].semi;
+            let maxDist=0;
+            for(let i=1;i<rootInfos.length;i++){
+                const d=((rootInfos[(s+i)%rootInfos.length].semi-base)%12+12)%12;
+                if(d>maxDist) maxDist=d;
+            }
+            if(maxDist<bestSpan){bestSpan=maxDist;bestStart=s;}
+        }
+        const ordered=[];
+        for(let i=0;i<rootInfos.length;i++) ordered.push(rootInfos[(bestStart+i)%rootInfos.length]);
+
+        // 3. Tiefste gültige Position auf der Tastatur finden
+        const firstPositions=sortedPositions[ordered[0].tone]||[];
+        let bestLayout=null;
+        for(const startPos of firstPositions){
+            const layout=new Map();
+            layout.set(ordered[0].tone,startPos);
+            let prevLeft=startPos.left;
+            let valid=true;
+            for(let i=1;i<ordered.length;i++){
+                const positions=sortedPositions[ordered[i].tone]||[];
+                const nextPos=positions.find(p=>p.left>prevLeft);
+                if(!nextPos){valid=false;break;}
+                layout.set(ordered[i].tone,nextPos);
+                prevLeft=nextPos.left;
+            }
+            if(valid){bestLayout=layout;break;}
+        }
+        if(!bestLayout) return null;
+
+        // 4. Rechte Hand: 1 Oktave (7 weiße Tasten) über höchstem linken-Hand-Ton
+        const highestRoot=bestLayout.get(ordered[ordered.length-1].tone);
+        const rightHandRefLeft=highestRoot.left+7*ww;
+
+        return {rootPositions:bestLayout, rightHandRefLeft, orderedRoots:ordered};
+    }
+
+    // Hilfsfunktion: Position-Map aus Piano-Element bauen
+    function buildSortedPositions(piano){
+        const sorted={};
+        piano.querySelectorAll('.white-key,.black-key').forEach(key=>{
+            const tone=key.dataset.tone;
+            if(!sorted[tone])sorted[tone]=[];
+            sorted[tone].push({left:parseFloat(key.style.left),width:parseFloat(key.style.width),element:key});
+        });
+        for(const t in sorted) sorted[t].sort((a,b)=>a.left-b.left);
+        return sorted;
+    }
+
+    // =====================================================================
     //  CORE FUNCTIONS
     // =====================================================================
     function selectTone(tone) {
@@ -1111,6 +1184,7 @@
         const row=state.melodyRows[state.selectedMelodyRow];
         state.summaryStages=[];
         if(state.selectedProgression.length>0){
+            cachedHandLayout=null; // Neu berechnen
             const cDiv=document.createElement('div'); cDiv.className='audio-controls';
             cDiv.innerHTML=buildAudioControlsHTML(); container.appendChild(cDiv);
             const pDiv=document.createElement('div'); pDiv.className='play-all-container';
@@ -1205,17 +1279,17 @@
         const usedPositions=new Map();
         const stagePlayData={notes:[],pianoEl:piano};
 
-        // LINKE HAND: Grundton
-        let rootKey;
-        if(root===state.currentTone){
-            rootKey=[...allKeys].reverse().find(k=>k.dataset.tone===root&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary-dims.ww*0.5);
-        } else if(deg<=2){
-            const startKey=[...allKeys].reverse().find(k=>k.dataset.tone===state.currentTone&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary-dims.ww*0.5);
-            const startPos=startKey?parseFloat(startKey.style.left):leftHandBoundary;
-            const candidates=allKeys.filter(k=>k.dataset.tone===root&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary-dims.ww*0.5);
-            if(candidates.length) rootKey=candidates.reduce((best,k)=>Math.abs(parseFloat(k.style.left)-startPos)<Math.abs(parseFloat(best.style.left)-startPos)?k:best);
-        } else {
-            rootKey=allKeys.find(k=>k.dataset.tone===root&&parseFloat(k.style.left)+parseFloat(k.style.width)/2<=leftHandBoundary-dims.ww*0.5);
+        // Hand-Layout berechnen (einmal, gecacht)
+        if(!cachedHandLayout){
+            const sorted=buildSortedPositions(piano);
+            cachedHandLayout=calculateHandLayout(sorted,dims.ww);
+        }
+
+        // LINKE HAND: Grundton aus Layout
+        let rootKey=null;
+        if(cachedHandLayout&&cachedHandLayout.rootPositions.has(root)){
+            const targetLeft=cachedHandLayout.rootPositions.get(root).left;
+            rootKey=allKeys.find(k=>k.dataset.tone===root&&Math.abs(parseFloat(k.style.left)-targetLeft)<5);
         }
         if(rootKey){
             const isRootBlack=rootKey.classList.contains('black-key');
@@ -1225,10 +1299,12 @@
             stagePlayData.notes.push({tone:root,keyEl:rootKey,octave:rootOct,simultaneous:false,isRoot:true});
         }
 
-        // RECHTE HAND: Töne positionieren, Duplikate stapeln
+        // RECHTE HAND: Referenz aus Layout oder vorheriger Stufe
         let referenceLeft;
         if(prevTerzLeft!==undefined&&prevTerzLeft!==null){
             referenceLeft=prevTerzLeft;
+        } else if(cachedHandLayout){
+            referenceLeft=cachedHandLayout.rightHandRefLeft;
         } else {
             referenceLeft=leftHandBoundary;
         }
@@ -1248,23 +1324,20 @@
             const tone=state.currentScaleTones[toneIdx];
             let targetKey;
             if(i===0){
-                // Erster Ton: nächstliegend zur Referenz (gesamte Tastatur, links ODER rechts)
                 const candidates=allKeys.filter(k=>k.dataset.tone===tone);
                 if(candidates.length) targetKey=candidates.reduce((best,k)=>Math.abs(parseFloat(k.style.left)-referenceLeft)<Math.abs(parseFloat(best.style.left)-referenceLeft)?k:best);
                 searchLeft=targetKey?parseFloat(targetKey.style.left):-Infinity;
             } else {
-                // Folgetöne: rechts vom vorherigen
                 targetKey=allKeys.find(k=>k.dataset.tone===tone&&parseFloat(k.style.left)>searchLeft);
                 if(targetKey) searchLeft=parseFloat(targetKey.style.left);
             }
             if(targetKey) toneKeyMap.set(ci, targetKey);
         });
 
-        // 3. Overflow-Schutz: wenn letzter Ton über Tastatur hinausgeht, alles eine Oktave tiefer
+        // 3. Overflow-Schutz: wenn letzter Ton über Tastatur hinausgeht, eine Oktave tiefer
         const lastOffset=uniqueToneOffsets[uniqueToneOffsets.length-1];
         const lastKey=toneKeyMap.get(lastOffset);
         if(lastKey&&parseFloat(lastKey.style.left)+parseFloat(lastKey.style.width)>pianoWidth){
-            // Neu positionieren: ersten Ton 7 weiße Tasten weiter links suchen
             toneKeyMap.clear();
             const lowerRef=referenceLeft-7*dims.ww;
             uniqueToneOffsets.forEach((ci,i)=>{
@@ -1319,19 +1392,21 @@
     let audioCtx=null, reverbNode=null, isPlaying=false, isPaused=false, shouldStop=false, isLooping=false, activeAudioNodes=[];
     const isMobile=/Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent)||(window.innerWidth<768&&'ontouchstart' in window);
     const MAX_POLYPHONY=isMobile?10:30;
-    let audioSettings={volume:0.7,tempo:600,reverb:0.3,sustain:true};
+    let audioSettings={volume:0.7,tempo:600,reverb:0.3,sustain:true,dynamics:true};
 
     function updateVolume(v){audioSettings.volume=v/100;document.querySelectorAll('.audio-vol-display').forEach(e=>e.textContent=v+'%');document.querySelectorAll('.audio-vol-slider').forEach(s=>{if(s.value!=v)s.value=v;});}
     function updateTempo(v){audioSettings.tempo=parseInt(v);document.querySelectorAll('.audio-tempo-display').forEach(e=>e.textContent=v+'ms');document.querySelectorAll('.audio-tempo-slider').forEach(s=>{if(s.value!=v)s.value=v;});pianoRollData.beatHeight=pianoRollData.baseBeatHeight*(audioSettings.tempo/pianoRollData.baseTempo);const c=document.getElementById('pianoRollNotes');if(c&&pianoRollNotes.length){renderPianoRollNotes();renderPianoRollTimeline();renderKeyLabels();}}
     function updateReverb(v){audioSettings.reverb=v/100;document.querySelectorAll('.audio-reverb-display').forEach(e=>e.textContent=v+'%');document.querySelectorAll('.audio-reverb-slider').forEach(s=>{if(s.value!=v)s.value=v;});}
     function toggleSustain(on){audioSettings.sustain=!!on;document.querySelectorAll('.audio-sustain-toggle').forEach(cb=>{cb.checked=audioSettings.sustain;});}
+    function toggleDynamics(on){audioSettings.dynamics=!!on;document.querySelectorAll('.audio-dynamics-toggle').forEach(cb=>{cb.checked=audioSettings.dynamics;});}
 
     function buildAudioControlsHTML() {
         const vol=Math.round(audioSettings.volume*100),tempo=audioSettings.tempo,reverb=Math.round(audioSettings.reverb*100);
         return `<div class="audio-control"><label>🔊 Lautstärke:</label><input type="range" class="audio-vol-slider" min="0" max="100" value="${vol}" oninput="updateVolume(this.value)"><span class="value audio-vol-display">${vol}%</span></div>
         <div class="audio-control"><label>⏱️ Tempo:</label><input type="range" class="audio-tempo-slider" min="200" max="1000" value="${tempo}" oninput="updateTempo(this.value)"><span class="value audio-tempo-display">${tempo}ms</span></div>
         <div class="audio-control"><label>🎵 Hall:</label><input type="range" class="audio-reverb-slider" min="0" max="100" value="${reverb}" oninput="updateReverb(this.value)"><span class="value audio-reverb-display">${reverb}%</span></div>
-        <div class="audio-control"><label>🎹 Sustain:</label><input type="checkbox" class="audio-sustain-toggle" ${audioSettings.sustain?'checked':''} onchange="toggleSustain(this.checked)"></div>`;
+        <div class="audio-control"><label>🎹 Sustain:</label><input type="checkbox" class="audio-sustain-toggle" ${audioSettings.sustain?'checked':''} onchange="toggleSustain(this.checked)"></div>
+        <div class="audio-control"><label>🎭 Dynamik:</label><input type="checkbox" class="audio-dynamics-toggle" ${audioSettings.dynamics?'checked':''} onchange="toggleDynamics(this.checked)"></div>`;
     }
 
     function initAudio(){
@@ -1701,22 +1776,21 @@
         for(const[tone,pos]of Object.entries(pianoRollData.keyPositions))sorted[tone]=[...pos].sort((a,b)=>a.left-b.left);
         const colOrder=state.melodyColumnOrder;
         const cPos=sorted['C']||[];
-        const stp=sorted[state.currentTone];
-        const stCands=stp?stp.filter(p=>p.left+p.width/2<=lhb-kw*0.5):[];
-        const startLeft=stCands.length?stCands[stCands.length-1].left:lhb;
-        // Referenz wandert von Stufe zu Stufe (identisch wie createMelodyPianoForStage)
-        let referenceLeft=lhb;
+
+        // Hand-Layout berechnen
+        const handLayout=calculateHandLayout(sorted,kw);
+        let referenceLeft=handLayout?handLayout.rightHandRefLeft:lhb;
 
         state.selectedProgression.forEach((deg,si)=>{
             const root=state.currentScaleTones[deg],terzIdx=(deg+2)%7,fc=funcs[deg];
             let mc=0;melodyPattern.forEach(v=>{if(v===1)mc++;});
             const sb=mc;
-            // Root
-            const rp=sorted[root];let rootPos=null;
-            if(rp){
-                if(root===state.currentTone){const c=rp.filter(p=>p.left+p.width/2<=lhb-kw*0.5);rootPos=c.length?c[c.length-1]:null;}
-                else if(deg<=2){const cands=rp.filter(p=>p.left+p.width/2<=lhb);if(cands.length)rootPos=cands.reduce((best,p)=>Math.abs(p.left-startLeft)<Math.abs(best.left-startLeft)?p:best);}
-                else{rootPos=rp.find(p=>p.left+p.width/2<=lhb);}
+            // Root aus Layout
+            let rootPos=null;
+            if(handLayout&&handLayout.rootPositions.has(root)){
+                const targetLeft=handLayout.rootPositions.get(root).left;
+                const rp=sorted[root]||[];
+                rootPos=rp.find(p=>Math.abs(p.left-targetLeft)<5);
             }
             if(rootPos) pianoRollNotes.push({tone:root,left:rootPos.left,width:rootPos.width,keyEl:rootPos.element,funcClass:fc,duration:sb,startBeat:gbc,stageIdx:si,isRoot:true,num:1,volume:1.0,octave:getOctaveFromPosition(rootPos.left,cPos,lhb)});
             // Melody
@@ -1732,7 +1806,6 @@
                 if(!positions||!positions.length)return;
                 let tp;
                 if(i===0){
-                    // Erster Ton: nächstliegend zur Referenz (gesamte Tastatur)
                     tp=positions.reduce((best,p)=>Math.abs(p.left-referenceLeft)<Math.abs(best.left-referenceLeft)?p:best);
                     if(tp){ referenceLeft=tp.left; searchLeft=tp.left; }
                 } else {
@@ -1900,7 +1973,7 @@
         if(note){
             initAudio();
             const lt=audioSettings.tempo;
-            playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000,note.volume||1.0);
+            playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000,audioSettings.dynamics?(note.volume||1.0):1.0);
             if(pianoRollData._playedNotes) pianoRollData._playedNotes.add(idx);
             const ne=pianoRollData.cachedNoteElMap.get(idx);
             if(ne) ne.classList.add('active');
@@ -2045,7 +2118,7 @@
                 if(currentBeat>=note.startBeat&&!playedNotes.has(idx)){
                     // Normal: automatischer Sound (nur wenn Übungsmodus AUS)
                     playedNotes.add(idx);ne.classList.add('active');ne.classList.remove('passed');
-                    playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000,note.volume||1.0);
+                    playPianoTone(getFrequency(note.tone,note.octave||4),note.duration*lt/1000,audioSettings.dynamics?(note.volume||1.0):1.0);
                     if(note.keyEl){if(note.isRoot){note.keyEl.classList.add('held');activeRootKeys.set(note.tone+'-'+note.stageIdx,note.keyEl);}else{highlightKey(note.keyEl,note.duration*lt*0.9);}}
                 }
                 if(currentBeat>=note.startBeat+note.duration&&!finishedNotes.has(idx)){
@@ -2125,37 +2198,34 @@
         const colOrder=state.melodyColumnOrder;
         const cPos=sorted['C']||[];
         let sig=0;
-        const stp=sorted[state.currentTone];
-        const stCands=stp?stp.filter(p=>p.left+p.width/2<=lhb-kw*0.5):[];
-        const startLeft=stCands.length?stCands[stCands.length-1].left:lhb;
+
+        // Hand-Layout berechnen
+        const handLayout=calculateHandLayout(sorted,kw);
 
         pieceGeneratorData.sections.forEach((section,sectionIdx)=>{
             const sp=new Array(7).fill(0);
             section.activeCols.forEach(c=>{if(c>=0&&c<sp.length)sp[c]=1;});
             const sectionVol=section.volume||1.0;
             const sectionTempo=section.tempoMult||1.0;
-            // Stufenloser Übergang: vorherige Sektion für Interpolation
             const prevSection=sectionIdx>0?pieceGeneratorData.sections[sectionIdx-1]:null;
             const prevVol=prevSection?(prevSection.volume||1.0):sectionVol;
             const prevTempo=prevSection?(prevSection.tempoMult||1.0):sectionTempo;
             const totalNotesInSection=state.selectedProgression.length;
-            // Reset: jeder Progression-Durchlauf startet frisch
-            let referenceLeft=lhb;
+            let referenceLeft=handLayout?handLayout.rightHandRefLeft:lhb;
             state.selectedProgression.forEach((deg,progIdx)=>{
-                // Stufenloser Übergang über die gesamte Sektion
                 const progress=Math.min(1,progIdx/(totalNotesInSection));
                 const noteVol=prevVol+(sectionVol-prevVol)*progress;
                 const noteTempo=prevTempo+(sectionTempo-prevTempo)*progress;
                 const root=state.currentScaleTones[deg],terzIdx=(deg+2)%7,fc=funcs[deg];
-                const rp=sorted[root];let rootPos=null;
-                if(rp){
-                    if(root===state.currentTone){const c=rp.filter(p=>p.left+p.width/2<=lhb-kw*0.5);rootPos=c.length?c[c.length-1]:null;}
-                    else if(deg<=2){const cands=rp.filter(p=>p.left+p.width/2<=lhb);if(cands.length)rootPos=cands.reduce((best,p)=>Math.abs(p.left-startLeft)<Math.abs(best.left-startLeft)?p:best);}
-                    else{rootPos=rp.find(p=>p.left+p.width/2<=lhb);}
+                // Root aus Layout
+                let rootPos=null;
+                if(handLayout&&handLayout.rootPositions.has(root)){
+                    const targetLeft=handLayout.rootPositions.get(root).left;
+                    const rp=sorted[root]||[];
+                    rootPos=rp.find(p=>Math.abs(p.left-targetLeft)<5);
                 }
                 const melodyOffsets=[];
                 sp.forEach((val,colIdx)=>{if(val===1){const ci=colOrder[colIdx]!==undefined?colOrder[colIdx]:colIdx;melodyOffsets.push(ci);}});
-                // Extra-Töne: zufällige Wiederholungen aus den vorhandenen
                 const extra=section.extraTones||0;
                 for(let e=0;e<extra;e++){
                     if(melodyOffsets.length>0) melodyOffsets.push(melodyOffsets[Math.floor(Math.random()*melodyOffsets.length)]);
